@@ -1,90 +1,54 @@
-// ======= SAFE VERCEL VERSION (WILL NOT CRASH) =======
-
-import TelegramBot from "node-telegram-bot-api";
-
-const TELEGRAM_TOKEN = process.env.TG_TOKEN;
-const MY_CHAT_ID = process.env.TG_CHAT_ID;
-const GROUP_CHAT_ID = process.env.TG_GROUP_ID;
-
-const WINGO_API =
-  "https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json?pageNo=1&pageSize=60";
-
-function colorOf(n) {
-  const num = Number(n);
-  if (num === 0) return "violet-red";
-  if (num === 5) return "violet-green";
-  return num % 2 === 0 ? "red" : "green";
-}
-
-function analyze(list) {
-  const colors = list.slice(0, 10).map(it => colorOf(it.number));
-
-  // Anti R-G killer
-  let alternating = true;
-  for (let i = 1; i < 6; i++) {
-    if (colors[i] === colors[i - 1]) {
-      alternating = false;
-      break;
-    }
-  }
-  if (alternating) {
-    return colors[0].includes("red") ? "GREEN" : "RED";
-  }
-
-  // Break long streak
-  let streak = 0;
-  for (let i = 0; i < 8; i++) {
-    if (colors[i] === colors[0]) streak++;
-    else break;
-  }
-  if (streak >= 3) {
-    return colors[0].includes("red") ? "GREEN" : "RED";
-  }
-
-  // Majority logic
-  let r = 0, g = 0;
-  for (let i = 0; i < 7; i++) {
-    colors[i].includes("red") ? r++ : g++;
-  }
-  if (r > g + 1) return "RED";
-  if (g > r + 1) return "GREEN";
-
-  return colors[0].includes("red") ? "RED" : "GREEN";
-}
-
 export default async function handler(req, res) {
 
-  // 1) Fetch WinGo data
-  const r = await fetch(WINGO_API);
-  const j = await r.json();
-  const list = j.data.list;
-
-  const completed = list[0].issueNumber;
-  const next = (BigInt(completed) + 1n).toString();
-  const prediction = analyze(list);
-
-  const message = `📢 Prediction for ${next}: ${prediction}`;
-
-  // 2) Send Telegram alerts SAFELY (won’t crash)
   try {
-    if (TELEGRAM_TOKEN && MY_CHAT_ID) {
-      const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
 
-      if (MY_CHAT_ID) {
-        await bot.sendMessage(MY_CHAT_ID, message);
-      }
-      if (GROUP_CHAT_ID) {
-        await bot.sendMessage(GROUP_CHAT_ID, message);
+    const WINGO_API =
+      "https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json?pageNo=1&pageSize=60";
+
+    const TELEGRAM_TOKEN = process.env.TG_TOKEN;
+    const MY_CHAT_ID = process.env.TG_CHAT_ID;
+    const GROUP_CHAT_ID = process.env.TG_GROUP_ID;
+
+    // 1) Get market data
+    const r = await fetch(WINGO_API);
+    const j = await r.json();
+    const list = j.data.list;
+
+    const completed = list[0].issueNumber;
+    const next = (BigInt(completed) + 1n).toString();
+
+    // Simple prediction (works 100% on Vercel)
+    const lastColor = list[0].number % 2 === 0 ? "RED" : "GREEN";
+    const prediction = lastColor === "RED" ? "GREEN" : "RED";
+
+    const message = `📢 Prediction for ${next}: ${prediction}`;
+
+    // 2) Try Telegram but DO NOT crash if it fails
+    if (TELEGRAM_TOKEN) {
+      try {
+        const { default: TelegramBot } = await import("node-telegram-bot-api");
+        const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
+
+        if (MY_CHAT_ID) await bot.sendMessage(MY_CHAT_ID, message);
+        if (GROUP_CHAT_ID) await bot.sendMessage(GROUP_CHAT_ID, message);
+
+      } catch (e) {
+        console.log("Telegram skipped:", e.message);
       }
     }
-  } catch (e) {
-    console.log("Telegram error (ignored):", e.message);
-  }
 
-  // 3) Always return response (so Vercel never 500s)
-  res.status(200).json({
-    nextIssue: next,
-    prediction,
-    history: list.slice(0, 10)
-  });
+    // 3) Always return success
+    return res.status(200).json({
+      nextIssue: next,
+      prediction,
+      history: list.slice(0, 10)
+    });
+
+  } catch (err) {
+    console.error("Server error:", err);
+    return res.status(500).json({
+      error: "Server crashed",
+      message: err.message
+    });
+  }
 }
