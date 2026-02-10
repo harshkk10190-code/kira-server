@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+// Use Vercel's built-in fetch
 import TelegramBot from "node-telegram-bot-api";
 
 const TELEGRAM_TOKEN = process.env.TG_TOKEN;
