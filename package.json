@@ -1,8 +1,11 @@
 {
-  "name": "kira-quantum-v6",
+  "name": "kira-quantum-v7-server",
   "version": "1.0.0",
-  "description": "24/7 VIP Signal Bot",
+  "description": "24/7 VIP Signal Server",
   "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server.js"
   },
