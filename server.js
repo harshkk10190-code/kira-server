@@ -9,18 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 (𝐆𝐎𝐃-𝐌𝐎𝐃𝐄) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>Premium UI Mode Active. No buttons. Pure Signals.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐.𝟏 (𝐆𝐎𝐃-𝐌𝐎𝐃𝐄) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>Premium UI Active. Streak-Riding & Defensive Recovery Engaged.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V12 Premium UI Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V12.1 Premium UI Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAGtI7iztlT4IKNJRgbhxV5r3PoW7haaIUM"; 
+const BOT_TOKEN = "8561861801:AAE1EMO2gZRmwG7x9BYs4fBO5Yjx3JqMirQ"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
@@ -66,13 +66,13 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>God-Mode Engine Activated.\nPremium UI Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐.𝟏 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>God-Mode Engine Activated.\nDefensive Recovery Protocol Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V12 BRAIN (GOD-MODE ENGINE) 
+// 🧠 QUANTUM V12.1 BRAIN (STREAK-RIDER) 
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
@@ -89,48 +89,59 @@ function analyzeGodMode(arr, typeLabel, currentLevel) {
     let confidence = 0;
     let reason = "";
 
-    let invertLogic = currentLevel > 0;
+    // Identify current market phases
+    let isStreak = (arr[0] === arr[1] && arr[1] === arr[2]);
+    let isChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3]);
+    let isDoubleChop = (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]);
 
-    if (arr[0] === arr[1] && arr[1] === arr[2]) {
-        prediction = invertLogic ? OPPOSITE(arr[0]) : arr[0];
-        confidence = invertLogic ? 94 : 96;
-        reason = invertLogic ? "Anti-Streak Market Correction" : "Riding Market Momentum";
-    }
-    else if (arr[0] !== arr[1] && arr[1] !== arr[2]) {
-        prediction = invertLogic ? arr[0] : OPPOSITE(arr[0]);
-        confidence = invertLogic ? 91 : 94;
-        reason = invertLogic ? "Chop Breakout Anticipation" : "Riding Alternating Chop";
-    }
-    else if (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]) {
-        prediction = invertLogic ? arr[0] : OPPOSITE(arr[0]);
-        confidence = invertLogic ? 89 : 92;
-        reason = invertLogic ? "Cluster Continuation" : "Double Cluster Exhaustion";
-    }
-    else if (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]) {
-        prediction = arr[0]; 
-        confidence = 88;
-        reason = "New Trend Breakout Confirmation";
-    }
-    else {
-        let countA = 0, countB = 0;
-        let valA = typeLabel === "SIZE" ? "BIG" : "RED";
-        let valB = typeLabel === "SIZE" ? "SMALL" : "GREEN";
-        
-        for (let i = 0; i < 7; i++) {
-            if (arr[i] === valA) countA++;
-            else if (arr[i] === valB) countB++;
-        }
-
-        if (countA >= 5) {
-            prediction = invertLogic ? valB : valA;
-            confidence = 85;
-            reason = invertLogic ? "Volume Reversal Protocol" : "Heavy Volume Bias Algorithm";
-        } else if (countB >= 5) {
-            prediction = invertLogic ? valA : valB;
-            confidence = 85;
-            reason = invertLogic ? "Volume Reversal Protocol" : "Heavy Volume Bias Algorithm";
+    // 🛡️ RECOVERY PROTOCOL (Level 2+)
+    // When money is on the line, NEVER fight the trend. Ride it or Wait.
+    if (currentLevel > 0) {
+        if (isStreak) {
+            prediction = arr[0]; // RIDE THE STREAK
+            confidence = 96;
+            reason = "Recovery: Riding Dominant Streak";
+        } else if (isChop) {
+            prediction = OPPOSITE(arr[0]); // RIDE THE CHOP
+            confidence = 94;
+            reason = "Recovery: Riding Alternating Chop";
         } else {
-            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Absolute Deadlock" };
+            // Force the bot to wait instead of guessing messy charts
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Recovery: Waiting for Clear Trend" };
+        }
+    } 
+    // ⚔️ STANDARD ENTRY (Level 1)
+    else {
+        if (isStreak) {
+            prediction = arr[0];
+            confidence = 94;
+            reason = "Trend Momentum Alignment";
+        } else if (isChop) {
+            prediction = OPPOSITE(arr[0]);
+            confidence = 92;
+            reason = "Chop Cycle Alignment";
+        } else if (isDoubleChop) {
+            prediction = OPPOSITE(arr[0]);
+            confidence = 89;
+            reason = "Double Cluster Exhaustion";
+        } else {
+            // Volume Check for Level 1 Only
+            let countA = 0, countB = 0;
+            let valA = typeLabel === "SIZE" ? "BIG" : "RED";
+            let valB = typeLabel === "SIZE" ? "SMALL" : "GREEN";
+            
+            for (let i = 0; i < 7; i++) {
+                if (arr[i] === valA) countA++;
+                else if (arr[i] === valB) countB++;
+            }
+
+            if (countA >= 6) { 
+                prediction = valB; confidence = 85; reason = "Volume Mean Reversion"; 
+            } else if (countB >= 6) { 
+                prediction = valA; confidence = 85; reason = "Volume Mean Reversion"; 
+            } else {
+                return { type: typeLabel, action: "WAIT", conf: 0, reason: "Absolute Deadlock" };
+            }
         }
     }
 
@@ -252,9 +263,9 @@ async function tick() {
                     if (signal.reason.includes("Anticipation") || signal.reason.includes("Confirmation")) reasonIcon = "🔮";
                     if (signal.reason.includes("Chop")) reasonIcon = "🔀";
                     if (signal.reason.includes("Momentum") || signal.reason.includes("Streak")) reasonIcon = "📈";
-                    if (signal.reason.includes("Volume")) reasonIcon = "🌊";
+                    if (signal.reason.includes("Volume") || signal.reason.includes("Reversion")) reasonIcon = "🌊";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐.𝟏 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
