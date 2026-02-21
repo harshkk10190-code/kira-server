@@ -20,7 +20,7 @@ app.listen(PORT, () => console.log(`🚀 Kira V8 Sniper Server listening on port
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAHt64tn9p5GtkLCH9G41DTKbxeBHZ6Mc6M"; 
+const BOT_TOKEN = "8561861801:AAHuViw8IRuNNchq-_ZCj_rJUwEXn_kkvws"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
@@ -90,7 +90,8 @@ function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; }
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
 function analyzeSniper(list) { 
-    if(!list || list.length < 20) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
+    // 🚨 LOWERED REQUIREMENT: Adjusted for API's 10-item limit
+    if(!list || list.length < 10) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
     
     // 1. EXTRACT RAW DATA 
     const latestItem = list[0]; 
@@ -101,13 +102,13 @@ function analyzeSniper(list) {
     const colors = list.map(i => getColor(Number(i.number))); 
 
     // ==========================================
-    // 🚀 UPGRADE 1: REAL-TIME BACKTESTER
+    // 🚀 UPGRADE 1: REAL-TIME BACKTESTER (Fixed for 10 items)
     // ==========================================
     let formulaWins = 0;
     let formulaLosses = 0;
     
-    // Test the formula against the last 15 periods
-    for(let i = 1; i < 16; i++) {
+    // Test the formula against the last 8 periods instead of 15
+    for(let i = 1; i < 9; i++) {
         let pastPeriodDigit = parseInt(list[i].issueNumber.toString().slice(-1));
         let pastWinningNum = parseInt(list[i].number);
         let pastCalc = (pastPeriodDigit + pastWinningNum) % 2 === 0;
@@ -163,20 +164,20 @@ function analyzeSniper(list) {
     if (patternSize && activeFormulaSize === patternSize) { 
         finalPrediction = activeFormulaSize; 
         finalType = "SIZE"; 
-        reasonText += sizeStreak ? " + Trend Alignment" : " + Chop Alignment"; 
+        reasonText += sizeStreak ? " + Trend Align" : " + Chop Align"; 
     } else if (patternColor && activeFormulaColor === patternColor) { 
         finalPrediction = activeFormulaColor; 
         finalType = "COLOR"; 
-        reasonText += colorStreak ? " + Trend Alignment" : " + Chop Alignment"; 
+        reasonText += colorStreak ? " + Trend Align" : " + Chop Align"; 
     } 
     
     // 4. SAFETY ABORT 
     if (!finalPrediction) { 
-        return { type: "NONE", action: "WAIT", conf: 0, reason: "Math/Pattern Conflict - Waiting for setup" }; 
+        return { type: "NONE", action: "WAIT", conf: 0, reason: "Math/Pattern Conflict - Waiting" }; 
     } 
     
     // Dynamic Confidence based on backtest strength
-    let winRate = isReversed ? (formulaLosses / 15) * 100 : (formulaWins / 15) * 100;
+    let winRate = isReversed ? (formulaLosses / 8) * 100 : (formulaWins / 8) * 100;
     let confidence = Math.floor(winRate > 60 ? (Math.random() * (99 - 92) + 92) : (Math.random() * (91 - 85) + 85)); 
 
     return { type: finalType, action: finalPrediction, conf: confidence, reason: reasonText }; 
