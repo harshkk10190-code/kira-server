@@ -1,0 +1,12 @@
+{
+  "name": "kira-quantum-v6",
+  "version": "1.0.0",
+  "description": "24/7 VIP Signal Bot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
