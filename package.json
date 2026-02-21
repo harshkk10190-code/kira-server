@@ -10,7 +10,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "brain.js": "^2.0.0-beta.23"
+    "express": "^4.18.2"
   }
 }
