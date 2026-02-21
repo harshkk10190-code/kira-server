@@ -10,17 +10,17 @@ app.get('/', (req, res) => {
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
             <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 (𝐆𝐎𝐃-𝐌𝐎𝐃𝐄) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>High-Frequency / High-Accuracy Engine with Adaptive Recovery.</p> 
+            <p>Premium UI Mode Active. No buttons. Pure Signals.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V12 God-Mode Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V12 Premium UI Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAGQEOVMl20VfTDDIG-7pRF2ObU4IFpRhck"; 
+const BOT_TOKEN = "8561861801:AAGtI7iztlT4IKNJRgbhxV5r3PoW7haaIUM"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
@@ -66,7 +66,7 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>God-Mode Engine Activated.\nAdaptive Loss-Recovery Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>God-Mode Engine Activated.\nPremium UI Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
@@ -89,41 +89,33 @@ function analyzeGodMode(arr, typeLabel, currentLevel) {
     let confidence = 0;
     let reason = "";
 
-    // DYNAMIC LOSS ADAPTATION: If we are in Level 2 or higher, the market is trapping normal patterns.
-    // We instantly invert the standard logic to break the losing streak.
     let invertLogic = currentLevel > 0;
 
-    // 1. PERFECT STREAK (AAA)
     if (arr[0] === arr[1] && arr[1] === arr[2]) {
         prediction = invertLogic ? OPPOSITE(arr[0]) : arr[0];
         confidence = invertLogic ? 94 : 96;
         reason = invertLogic ? "Anti-Streak Market Correction" : "Riding Market Momentum";
     }
-    // 2. PERFECT CHOP (ABA)
     else if (arr[0] !== arr[1] && arr[1] !== arr[2]) {
         prediction = invertLogic ? arr[0] : OPPOSITE(arr[0]);
         confidence = invertLogic ? 91 : 94;
         reason = invertLogic ? "Chop Breakout Anticipation" : "Riding Alternating Chop";
     }
-    // 3. DOUBLE CHOP / CLUSTER (AABB)
     else if (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]) {
         prediction = invertLogic ? arr[0] : OPPOSITE(arr[0]);
         confidence = invertLogic ? 89 : 92;
         reason = invertLogic ? "Cluster Continuation" : "Double Cluster Exhaustion";
     }
-    // 4. THE TREND BREAKOUT (BAAA -> recently broke to B)
     else if (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]) {
-        prediction = arr[0]; // Expect the newly formed trend to establish itself
+        prediction = arr[0]; 
         confidence = 88;
         reason = "New Trend Breakout Confirmation";
     }
-    // 5. VOLUME BIAS FALLBACK (Ensures frequent bets when patterns are messy)
     else {
         let countA = 0, countB = 0;
         let valA = typeLabel === "SIZE" ? "BIG" : "RED";
         let valB = typeLabel === "SIZE" ? "SMALL" : "GREEN";
         
-        // Scan last 7 periods for dominant volume
         for (let i = 0; i < 7; i++) {
             if (arr[i] === valA) countA++;
             else if (arr[i] === valB) countB++;
@@ -158,7 +150,6 @@ function getBestSignal(list, currentLevel) {
         return { type: "NONE", action: "WAIT", conf: 0, reason: "Market Deadlock - Scanning Next Block" };
     }
 
-    // Return the signal with the highest mathematical confidence
     if (sizeSignal.conf >= colorSignal.conf) return sizeSignal;
     return colorSignal;
 } 
@@ -205,19 +196,21 @@ async function tick() {
                     
                     let currentAccuracy = Math.round((state.wins / state.totalSignals) * 100); 
                     
+                    // 🌟 UPGRADED RESULT UI (Receipt Style)
                     let resMsg = isWin ? `✅ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐄𝐋𝐈𝐌𝐈𝐍𝐀𝐓𝐄𝐃</b> ✅\n` : `❌ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> ❌\n`; 
                     resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
-                    resMsg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
-                    resMsg += `🎲 𝐑𝐞𝐬𝐮𝐥𝐭: <b>${actualNum} (${actualResult})</b>\n`; 
+                    resMsg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝  : <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
+                    resMsg += `🎲 𝐑𝐞𝐬𝐮𝐥𝐭  : <b>${actualNum} (${actualResult})</b>\n`; 
+                    resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
                     
                     if(isWin) {
-                        resMsg += `💰 𝐒𝐭𝐚𝐭𝐮𝐬: <b>PROFIT SECURED! (Level 1)</b>\n`; 
+                        resMsg += `💰 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>PROFIT SECURED!</b>\n`; 
                     } else {
-                        resMsg += `🛡️ 𝐒𝐭𝐚𝐭𝐮𝐬: Adaptability Active. Escalating to Level ${state.currentLevel + 1}...\n`; 
+                        resMsg += `🛡️ 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>ESCALATING (L${state.currentLevel + 1})</b>\n`; 
                     }
                     
-                    resMsg += `📈 𝐀𝐜𝐜𝐮𝐫𝐚𝐜𝐲: ${currentAccuracy}%\n`; 
-                    resMsg += `━━━━━━━━━━━━━━━━━━`; 
+                    resMsg += `🏆 𝐖𝐢𝐧 𝐑𝐚𝐭𝐞 : <b>${currentAccuracy}%</b>\n`; 
+                    resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.currentLevel === 0 ? '1' : state.currentLevel + 1}</b>\n`; 
                     
                     await sendTelegram(resMsg); 
                 } 
@@ -231,21 +224,46 @@ async function tick() {
                 const signal = getBestSignal(list, state.currentLevel); 
                 
                 if(signal && signal.action === "WAIT") { 
-                    let msg = `⏸ <b>𝐌𝐀𝐑𝐊𝐄𝐓 𝐒𝐂𝐀𝐍 | 𝐏𝐞𝐫𝐢𝐨𝐝: ${targetIssue.slice(-4)}</b>\n\n⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> ${signal.reason}`; 
+                    // 🌟 UPGRADED WAIT UI (Radar Scan)
+                    let msg = `📡 <b>𝐊𝐈𝐑𝐀 𝐑𝐀𝐃𝐀𝐑 𝐒𝐂𝐀𝐍</b> 📡\n`; 
+                    msg += `━━━━━━━━━━━━━━━━━━\n`; 
+                    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
+                    msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n`; 
+                    msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`; 
+                    msg += `⏱ <i>Awaiting optimal market conditions...</i>`;
                     await sendTelegram(msg); 
                 } else if(signal) { 
                     let signalEmoji = signal.type === "COLOR" ? "🎨" : "📏"; 
                     let betAmount = FUND_LEVELS[state.currentLevel]; 
+
+                    // 🌟 UPGRADED THREAT LEVEL UI
+                    let threatLevel = "🟢 𝐒𝐓𝐀𝐍𝐃𝐀𝐑𝐃 𝐄𝐍𝐓𝐑𝐘";
+                    if (state.currentLevel === 1) threatLevel = "🟡 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘 𝐏𝐑𝐎𝐓𝐎𝐂𝐎𝐋";
+                    if (state.currentLevel >= 2) threatLevel = "🔴 𝐂𝐑𝐈𝐓𝐈𝐂𝐀𝐋 𝐀𝐃𝐀𝐏𝐓𝐀𝐓𝐈𝐎𝐍";
+
+                    // 🌟 UPGRADED CONFIDENCE BAR UI
+                    let bar = "🟩🟩🟩🟩🟩";
+                    if (signal.conf < 95) bar = "🟩🟩🟩🟩⬜";
+                    if (signal.conf < 90) bar = "🟩🟩🟩⬜⬜";
+                    if (signal.conf < 85) bar = "🟩🟩⬜⬜⬜";
+
+                    // 🌟 DYNAMIC STRATEGY ICONS
+                    let reasonIcon = "⚙️";
+                    if (signal.reason.includes("Anticipation") || signal.reason.includes("Confirmation")) reasonIcon = "🔮";
+                    if (signal.reason.includes("Chop")) reasonIcon = "🔀";
+                    if (signal.reason.includes("Momentum") || signal.reason.includes("Streak")) reasonIcon = "📈";
+                    if (signal.reason.includes("Volume")) reasonIcon = "🌊";
                     
                     let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟐 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
                     msg += `🔮 <b>𝐏𝐫𝐞𝐝𝐢𝐜𝐭𝐢𝐨𝐧: ${signal.action}</b>\n`; 
-                    msg += `📊 𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞: ${signal.conf}%\n`; 
+                    msg += `📊 𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞: ${bar} <b>${signal.conf}%</b>\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
-                    msg += `💰 <b>𝐔𝐒𝐄 𝐋𝐄𝐕𝐄𝐋 ${state.currentLevel + 1} 𝐅𝐔𝐍𝐃: Rs. ${betAmount}</b>\n`; 
-                    msg += `💡 <i>${signal.reason}</i>`; 
+                    msg += `⚠️ <b>${threatLevel}</b>\n`; 
+                    msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 (𝐋${state.currentLevel + 1}): Rs. ${betAmount}</b>\n`; 
+                    msg += `${reasonIcon} <i>${signal.reason}</i>`; 
                     
                     await sendTelegram(msg); 
                     state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf }; 
