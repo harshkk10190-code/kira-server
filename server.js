@@ -3,9 +3,15 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🌐 DUMMY WEB SERVER (Keeps the cloud host awake)
+// 🌐 WEB MONITOR (Keeps the cloud host awake)
 app.get('/', (req, res) => {
-    res.send('<h2>🟢 KIRA QUANTUM V6 SERVER IS ONLINE 24/7</h2><p>The AI is currently analyzing the markets in the background.</p>');
+    res.send(`
+        <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;">
+            <h2>🟢 KIRA QUANTUM V7 CLOUD SERVER IS ONLINE</h2>
+            <p>The AI is currently analyzing the markets in the background.</p>
+            <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p>
+        </body>
+    `);
 });
 app.listen(PORT, () => console.log(`🚀 Kira Cloud Server listening on port ${PORT}`));
 
@@ -15,17 +21,14 @@ app.listen(PORT, () => console.log(`🚀 Kira Cloud Server listening on port ${P
 const BOT_TOKEN = "8561861801:AAE8stFdYnAYuiXURg5esS-caURtIzx6gRg";
 const TARGET_CHATS = ["1669843747", "-1002613316641"];
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30";
-const FUND_LEVELS = [33, 66, 100, 133, 168, 500];
+const FUND_LEVELS = [10, 20, 40, 80, 160, 320];
 
-// 🛡️ MOBILE STEALTH HEADERS (To bypass Cloudflare on the server)
+// 🛡️ SERVER STEALTH HEADERS
 const HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
     "Origin": "https://www.dmwin2.com",
-    "Referer": "https://www.dmwin2.com/",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "cross-site"
+    "Referer": "https://www.dmwin2.com/"
 };
 
 // ==========================================
@@ -43,7 +46,11 @@ let state = {
 
 function loadState() {
     if (fs.existsSync(STATE_FILE)) {
-        state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+        try {
+            state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+        } catch(e) {
+            console.log("Memory file corrupted. Booting fresh.");
+        }
     }
 }
 function saveState() {
@@ -63,25 +70,26 @@ async function sendTelegram(text) {
                 body: JSON.stringify({ chat_id: chat_id, text: text, parse_mode: 'HTML' })
             });
         } catch(e) { 
-            console.error("TG Network Error"); 
+            console.error(`TG Delivery Error to ${chat_id}:`, e.message); 
         }
     }
 }
 
 if (!state.isStarted) {
-    let bootMsg = `🟢 <b>KIRA QUANTUM V6 CLOUD SERVER ONLINE</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Bot successfully migrated to 24/7 Cloud Engine.\nAuto-Fund Manager Activated.</i>`;
+    let bootMsg = `🟢 <b>KIRA QUANTUM V7 CLOUD SERVER ONLINE</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Bot successfully migrated to 24/7 Cloud Engine.\nAuto-Fund Manager Activated.</i>`;
     sendTelegram(bootMsg);
     state.isStarted = true; saveState();
 }
 
 // ==========================================
-// 🧠 QUANTUM V6 BRAIN (HYBRID ENGINE)
+// 🧠 QUANTUM V7 BRAIN (HYBRID ENGINE)
 // ==========================================
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; }
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; }
 
 function analyzeArray(arr, typeLabel) {
     let prediction = "WAIT"; let confidence = 0; let analysisText = "";
+    
     let chopCount = 0;
     for(let i=0; i < 4; i++) { if(arr[i] !== arr[i+1]) chopCount++; }
     
@@ -153,23 +161,34 @@ function analyzeQuantumHybrid(list) {
 }
 
 // ==========================================
-// ⚙️ SYSTEM LOOP
+// ⚙️ SERVER MAIN LOOP
 // ==========================================
 let isProcessing = false; 
 
 async function tick() {
-    if(isProcessing) return; isProcessing = true;
+    if(isProcessing) return; 
+    isProcessing = true;
 
     try {
         const res = await fetch(API + "&_t=" + Date.now(), { headers: HEADERS, timeout: 10000 });
         const data = await res.json();
+        
+        if(!data.data || !data.data.list) throw new Error("Invalid API Response");
+        
         const list = data.data.list;
         const latestIssue = list[0].issueNumber;
         const targetIssue = (BigInt(latestIssue) + 1n).toString();
         
-        console.log(`[${new Date().toLocaleTimeString()}] Live Data Synced. Target: ${targetIssue.slice(-4)}`);
+        console.log(`[${new Date().toLocaleTimeString()}] Target Period: ${targetIssue.slice(-4)}`);
 
-        // 1️⃣ CHECK PREVIOUS RESULT 
+        // 🚨 ANTI-HANG OVERRIDE: If the bot missed a period by more than 2 rounds, force a reset
+        if(state.activePrediction && BigInt(latestIssue) >= BigInt(state.activePrediction.period) + 2n) {
+            console.log(`⚠️ MISSED RESULT for Period ${state.activePrediction.period}. Forcing reset to protect loop.`);
+            state.activePrediction = null;
+            saveState();
+        }
+
+        // 1️⃣ CHECK PREVIOUS RESULT
         if(state.activePrediction) {
             if(BigInt(latestIssue) >= BigInt(state.activePrediction.period)) {
                 const resultItem = list.find(i => i.issueNumber === state.activePrediction.period);
@@ -204,7 +223,7 @@ async function tick() {
             }
         }
 
-        // 2️⃣ GENERATE NEW HYBRID PREDICTION
+        // 2️⃣ GENERATE NEW PREDICTION
         if(state.lastProcessedIssue !== latestIssue) {
             if(!state.activePrediction) {
                 const signal = analyzeQuantumHybrid(list);
@@ -229,7 +248,7 @@ async function tick() {
                     msg += `💡 <i>${signal.reason}</i>`;
                     
                     await sendTelegram(msg);
-                    console.log(`[${targetIssue.slice(-4)}] Signal Fired: ${signal.action} Level ${state.currentLevel + 1}`);
+                    console.log(`[${targetIssue.slice(-4)}] Signal Fired: ${signal.action}`);
                     
                     state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf };
                     saveState();
@@ -238,12 +257,12 @@ async function tick() {
             state.lastProcessedIssue = latestIssue; saveState();
         }
     } catch (e) {
-        console.error("API Fetch Error");
+        console.error("API Fetch Error - Will retry next tick.");
     } finally {
         isProcessing = false; 
     }
 }
 
-// Check market every 2 seconds
+// Server checks the market every 2 seconds
 setInterval(tick, 2000);
 tick();
