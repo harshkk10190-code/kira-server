@@ -9,18 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟑 (𝐁𝐀𝐋𝐀𝐍𝐂𝐄𝐃 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>High-Frequency + Safe Recovery Engaged.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟒 (𝐓𝐈𝐄𝐑𝐄𝐃 𝐑𝐈𝐒𝐊) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>Dynamic Brain Shifting Engaged. Deep Recovery Lockdown Active.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V13 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V14 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAEmWK2uC0ykUqRRHijh_igo5V49ZhikfzA"; 
+const BOT_TOKEN = "8561861801:AAEt6Tln3WfUTQZH04atSo9V4zjOkBsah8s"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
@@ -66,18 +66,18 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟑 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Balanced Matrix Engine Activated.\nHigh-Frequency Safe Mode Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟒 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Tiered Risk Engine Activated.\nDeep Recovery Lockdown Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V13 BRAIN (BALANCED MATRIX) 
+// 🧠 QUANTUM V14 BRAIN (TIERED RISK ENGINE) 
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV13(arr, typeLabel, currentLevel) {
+function analyzeV14(arr, typeLabel, currentLevel) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -89,51 +89,72 @@ function analyzeV13(arr, typeLabel, currentLevel) {
     let reason = "";
     const getConf = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    // 🌟 PATTERN RECOGNITION
+    // 🌟 MACRO PATTERNS
+    let isHeavyStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); // AAAA
     let isStreak = (arr[0] === arr[1] && arr[1] === arr[2]); // AAA
     let isChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3]); // ABAB
     let isCluster = (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]); // AABB
-    let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); // BAAA -> broke into A
+    let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); // BAAA
 
-    // 🛡️ UNIVERSAL LOGIC (Applies to Level 1 AND Recovery)
-    // We NEVER fight streaks anymore. We ride them or we trade the chop.
-    if (isStreak) {
-        prediction = arr[0]; 
-        reason = currentLevel > 0 ? "Recovery: Riding Dominant Streak" : "Tier-1 Momentum Alignment";
-    } else if (isChop) {
-        prediction = OPPOSITE(arr[0]); 
-        reason = currentLevel > 0 ? "Recovery: Alternation Synchronization" : "Tier-1 Chop Synchronization";
-    } else if (isCluster) {
-        prediction = OPPOSITE(arr[0]);
-        reason = currentLevel > 0 ? "Recovery: Cluster Exhaustion Protocol" : "Double Cluster Alignment";
-    } else if (isBreakout) {
-        prediction = arr[0];
-        reason = "Trend Breakout Confirmation";
-    } else {
-        // 🌟 SMART VOLUME FALLBACK (Prevents 7-minute waits)
-        // If the chart is messy, check the last 5 periods. If 4 out of 5 are BIG, bet BIG.
-        let countA = 0, countB = 0;
-        let valA = typeLabel === "SIZE" ? "BIG" : "RED";
-        let valB = typeLabel === "SIZE" ? "SMALL" : "GREEN";
-        
-        for (let i = 0; i < 5; i++) {
-            if (arr[i] === valA) countA++;
-            else if (arr[i] === valB) countB++;
-        }
-
-        if (countA >= 4) { 
-            prediction = valA; reason = "Volume Momentum Push"; 
-        } else if (countB >= 4) { 
-            prediction = valB; reason = "Volume Momentum Push"; 
+    // 🔴 PHASE 3: DEEP RECOVERY LOCKDOWN (Level 4, 5, 6)
+    // Absolute zero risk. Only takes flawless setups to save bankroll.
+    if (currentLevel >= 3) {
+        if (isHeavyStreak) {
+            prediction = arr[0]; reason = "Deep Recovery: Heavy Streak Lock";
+        } else if (isChop) {
+            prediction = OPPOSITE(arr[0]); reason = "Deep Recovery: Perfect Chop Lock";
         } else {
-            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Market Noise - Filtering" };
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery Protocol: Awaiting Tier-1 Setup" };
+        }
+    } 
+    // 🟡 PHASE 2: CAUTION MODE (Level 2, 3)
+    // No more volume guessing. Sticks to visual patterns only.
+    else if (currentLevel > 0) {
+        if (isStreak) {
+            prediction = arr[0]; reason = "Recovery: Riding Dominant Streak";
+        } else if (isChop) {
+            prediction = OPPOSITE(arr[0]); reason = "Recovery: Alternation Synchronization";
+        } else if (isCluster) {
+            prediction = OPPOSITE(arr[0]); reason = "Recovery: Cluster Exhaustion Protocol";
+        } else {
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Recovery Mode: Filtering Market Noise" };
+        }
+    } 
+    // 🟢 PHASE 1: HIGH FREQUENCY (Level 1)
+    // Aggressive trading to keep signals flowing.
+    else {
+        if (isStreak) {
+            prediction = arr[0]; reason = "Tier-1 Momentum Alignment";
+        } else if (isChop) {
+            prediction = OPPOSITE(arr[0]); reason = "Tier-1 Chop Synchronization";
+        } else if (isCluster) {
+            prediction = OPPOSITE(arr[0]); reason = "Double Cluster Alignment";
+        } else if (isBreakout) {
+            prediction = arr[0]; reason = "Trend Breakout Confirmation";
+        } else {
+            let countA = 0, countB = 0;
+            let valA = typeLabel === "SIZE" ? "BIG" : "RED";
+            let valB = typeLabel === "SIZE" ? "SMALL" : "GREEN";
+            
+            for (let i = 0; i < 5; i++) {
+                if (arr[i] === valA) countA++;
+                else if (arr[i] === valB) countB++;
+            }
+            if (countA >= 4) { 
+                prediction = valA; reason = "Volume Momentum Push"; 
+            } else if (countB >= 4) { 
+                prediction = valB; reason = "Volume Momentum Push"; 
+            } else {
+                return { type: typeLabel, action: "WAIT", conf: 0, reason: "Market Deadlock - Scanning Next Block" };
+            }
         }
     }
 
-    // Apply dynamic confidence based on the setup strength
+    // Dynamic Confidence
     let confidence = getConf(88, 93);
-    if (reason.includes("Momentum") || reason.includes("Streak")) confidence = getConf(95, 98);
-    else if (reason.includes("Chop")) confidence = getConf(91, 95);
+    if (reason.includes("Heavy") || reason.includes("Deep Recovery")) confidence = getConf(96, 99);
+    else if (reason.includes("Momentum") || reason.includes("Streak")) confidence = getConf(94, 97);
+    else if (reason.includes("Chop")) confidence = getConf(92, 95);
 
     return { type: typeLabel, action: prediction, conf: confidence, reason: reason };
 }
@@ -144,11 +165,11 @@ function getBestSignal(list, currentLevel) {
     const sizes = list.map(i => getSize(Number(i.number))); 
     const colors = list.map(i => getColor(Number(i.number))); 
     
-    let sizeSignal = analyzeV13(sizes, "SIZE", currentLevel);
-    let colorSignal = analyzeV13(colors, "COLOR", currentLevel);
+    let sizeSignal = analyzeV14(sizes, "SIZE", currentLevel);
+    let colorSignal = analyzeV14(colors, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
-        return { type: "NONE", action: "WAIT", conf: 0, reason: "Market Deadlock - Scanning Next Block" };
+        return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
     }
 
     if (sizeSignal.conf >= colorSignal.conf) return sizeSignal;
@@ -238,6 +259,7 @@ async function tick() {
                     let threatLevel = "🟢 𝐒𝐓𝐀𝐍𝐃𝐀𝐑𝐃 𝐄𝐍𝐓𝐑𝐘";
                     if (state.currentLevel === 1) threatLevel = "🟡 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘 𝐏𝐑𝐎𝐓𝐎𝐂𝐎𝐋";
                     if (state.currentLevel >= 2) threatLevel = "🔴 𝐂𝐑𝐈𝐓𝐈𝐂𝐀𝐋 𝐀𝐃𝐀𝐏𝐓𝐀𝐓𝐈𝐎𝐍";
+                    if (state.currentLevel >= 3) threatLevel = "🚨 𝐃𝐄𝐄𝐏 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘 𝐋𝐎𝐂𝐊𝐃𝐎𝐖𝐍";
 
                     let bar = "🟩🟩🟩🟩🟩";
                     if (signal.conf < 96) bar = "🟩🟩🟩🟩⬜";
@@ -248,8 +270,9 @@ async function tick() {
                     if (signal.reason.includes("Chop")) reasonIcon = "🔀";
                     if (signal.reason.includes("Momentum") || signal.reason.includes("Streak")) reasonIcon = "📈";
                     if (signal.reason.includes("Volume") || signal.reason.includes("Push")) reasonIcon = "🌊";
+                    if (signal.reason.includes("Deep")) reasonIcon = "🛡️";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟑 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟒 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
