@@ -20,7 +20,7 @@ app.listen(PORT, () => console.log(`🚀 Kira V19 Server listening on port ${POR
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAE8stFdYnAYuiXURg5esS-caURtIzx6gRg"; 
+const BOT_TOKEN = "8561861801:AAEWusauibNdCWiPpXPqD_PN08uVKi0RHe4"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500, 1100, 2400, 5000]; 
