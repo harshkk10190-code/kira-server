@@ -9,21 +9,23 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟔 (𝐍𝐔𝐌𝐁𝐄𝐑-𝐀𝐖𝐀𝐑𝐄 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>9-Level Matrix Engaged. Violet Trap Filtering Active.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟕 (𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>9-Level Matrix Engaged. 15-Minute Timeout Reset Active.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V16 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V17 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAFRy90uKlvZuXzb-6vDEbak3tZiclL8JRU"; 
+const BOT_TOKEN = "8561861801:AAHZ4VGICuwOqoh79-m7mVX_j34jUSLrAxk"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500, 1100, 2400, 5000]; 
+const MAX_WAIT_STREAK = 15; // 🚨 Triggers Circuit Breaker after 15 consecutive WAITs
+
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
     "Accept": "application/json, text/plain, */*", 
@@ -41,7 +43,8 @@ let state = {
     totalSignals: 0, 
     wins: 0, 
     isStarted: false, 
-    currentLevel: 0 
+    currentLevel: 0,
+    consecutiveWaits: 0 // 🌟 New variable to track WAIT timeout
 }; 
 
 function loadState() { 
@@ -66,18 +69,18 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟔 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Number-Aware Matrix Activated.\nViolet Trap Filtering Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟕 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Number-Aware Matrix Activated.\nTimeout Circuit Breaker Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V16 BRAIN (NUMBER-AWARE) 
+// 🧠 QUANTUM V17 BRAIN 
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV16(arr, rawNums, typeLabel, currentLevel) {
+function analyzeV17(arr, rawNums, typeLabel, currentLevel) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -89,11 +92,8 @@ function analyzeV16(arr, rawNums, typeLabel, currentLevel) {
     let reason = "";
     const getConf = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    // 🌟 THE VIOLET TRAP FILTER
-    // If a 0 or 5 appeared recently, the trend is mathematically unstable.
     let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5 || rawNums[1] === 0 || rawNums[1] === 5);
 
-    // 🌟 MACRO PATTERNS
     let isDeathStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3] && arr[3] === arr[4] && arr[4] === arr[5]); 
     let isGodStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3] && arr[3] === arr[4]); 
     let isGodChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3] && arr[3] !== arr[4] && arr[4] !== arr[5]);
@@ -189,8 +189,8 @@ function getBestSignal(list, currentLevel) {
     const colors = list.map(i => getColor(Number(i.number))); 
     const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV16(sizes, rawNums, "SIZE", currentLevel);
-    let colorSignal = analyzeV16(colors, rawNums, "COLOR", currentLevel);
+    let sizeSignal = analyzeV17(sizes, rawNums, "SIZE", currentLevel);
+    let colorSignal = analyzeV17(colors, rawNums, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
@@ -235,8 +235,10 @@ async function tick() {
                     if(isWin) { 
                         state.wins++; 
                         state.currentLevel = 0; 
+                        state.consecutiveWaits = 0; // Reset wait timer on win
                     } else { 
                         state.currentLevel++; 
+                        state.consecutiveWaits = 0; // Reset wait timer on loss escalation
                         if(state.currentLevel >= FUND_LEVELS.length) state.currentLevel = 0; 
                     } 
                     
@@ -266,17 +268,39 @@ async function tick() {
         // 2️⃣ GENERATE NEW PREDICTION 
         if(state.lastProcessedIssue !== latestIssue) { 
             if(!state.activePrediction) { 
+                
+                // 🚨 CIRCUIT BREAKER CHECK
+                if (state.consecutiveWaits >= MAX_WAIT_STREAK) {
+                    let msg = `⚡️ <b>𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑 𝐓𝐑𝐈𝐏𝐏𝐄𝐃</b> ⚡️\n`;
+                    msg += `━━━━━━━━━━━━━━━━━━\n`;
+                    msg += `⚠️ Market manipulation detected. Sustained high-risk volatility identified.\n`;
+                    msg += `🛡️ <b>STRATEGIC SURRENDER INITIATED.</b>\n`;
+                    msg += `🔄 <b>Resetting to Level 1 to protect capital.</b>\n`;
+                    msg += `⏱ System will resume normal High-Frequency scanning now.`;
+                    
+                    await sendTelegram(msg);
+                    state.currentLevel = 0; // Reset to Level 1
+                    state.consecutiveWaits = 0; // Reset wait timer
+                    saveState();
+                    return; // Skip this tick to let the reset process
+                }
+
                 const signal = getBestSignal(list, state.currentLevel); 
                 
                 if(signal && signal.action === "WAIT") { 
+                    state.consecutiveWaits++; // Increment the wait timer
+                    
                     let msg = `📡 <b>𝐊𝐈𝐑𝐀 𝐑𝐀𝐃𝐀𝐑 𝐒𝐂𝐀𝐍</b> 📡\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n`; 
                     msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`; 
-                    msg += `⏱ <i>Awaiting optimal market conditions...</i>`;
+                    msg += `⏱ <i>Awaiting optimal market conditions... (${state.consecutiveWaits}/${MAX_WAIT_STREAK})</i>`;
                     await sendTelegram(msg); 
+                    saveState();
                 } else if(signal) { 
+                    state.consecutiveWaits = 0; // Reset wait timer because a signal fired
+                    
                     let signalEmoji = signal.type === "COLOR" ? "🎨" : "📏"; 
                     let betAmount = FUND_LEVELS[state.currentLevel]; 
 
@@ -296,7 +320,7 @@ async function tick() {
                     if (signal.reason.includes("Volume") || signal.reason.includes("Push")) reasonIcon = "🌊";
                     if (signal.reason.includes("God-Tier")) reasonIcon = "☠️";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟔 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟕 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
