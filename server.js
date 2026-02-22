@@ -9,21 +9,20 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟓.𝟏 (𝟗-𝐋𝐄𝐕𝐄𝐋 𝐓𝐈𝐄𝐑𝐄𝐃) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>9-Level Matrix Engaged. God-Tier Sniper Lockdown Active.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟔 (𝐍𝐔𝐌𝐁𝐄𝐑-𝐀𝐖𝐀𝐑𝐄 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>9-Level Matrix Engaged. Violet Trap Filtering Active.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V15.1 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V16 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAEu62VOPi6o62nCZHHHRcX-3RfmuwgXf64"; 
+const BOT_TOKEN = "8561861801:AAFRy90uKlvZuXzb-6vDEbak3tZiclL8JRU"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
-// 🌟 9 LEVELS
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500, 1100, 2400, 5000]; 
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
@@ -67,19 +66,18 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟓 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>9-Level Risk Engine Activated.\nGod-Tier Sniper Lockdown Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟔 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Number-Aware Matrix Activated.\nViolet Trap Filtering Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V15.1 BRAIN 
+// 🧠 QUANTUM V16 BRAIN (NUMBER-AWARE) 
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV15(arr, typeLabel, currentLevel) {
-    // 🚨 FIXED: Reduced from 15 to 10 to bypass API limits
+function analyzeV16(arr, rawNums, typeLabel, currentLevel) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -91,7 +89,12 @@ function analyzeV15(arr, typeLabel, currentLevel) {
     let reason = "";
     const getConf = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+    // 🌟 THE VIOLET TRAP FILTER
+    // If a 0 or 5 appeared recently, the trend is mathematically unstable.
+    let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5 || rawNums[1] === 0 || rawNums[1] === 5);
+
     // 🌟 MACRO PATTERNS
+    let isDeathStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3] && arr[3] === arr[4] && arr[4] === arr[5]); 
     let isGodStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3] && arr[3] === arr[4]); 
     let isGodChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3] && arr[3] !== arr[4] && arr[4] !== arr[5]);
     
@@ -105,7 +108,11 @@ function analyzeV15(arr, typeLabel, currentLevel) {
 
     // ☠️ PHASE 4: GOD-TIER SNIPER (Levels 6, 7, 8, 9)
     if (currentLevel >= 5) {
-        if (isGodStreak) {
+        if (isVioletTrap) {
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "God-Tier Sniper: Violet Trap Detected" };
+        } else if (isDeathStreak) {
+            prediction = OPPOSITE(arr[0]); reason = "God-Tier: Death Streak Reversal";
+        } else if (isGodStreak) {
             prediction = arr[0]; reason = "God-Tier: Supreme Streak Lock";
         } else if (isGodChop) {
             prediction = OPPOSITE(arr[0]); reason = "God-Tier: Supreme Chop Lock";
@@ -115,7 +122,9 @@ function analyzeV15(arr, typeLabel, currentLevel) {
     }
     // 🔴 PHASE 3: DEEP RECOVERY LOCKDOWN (Level 4, 5)
     else if (currentLevel >= 3) {
-        if (isHeavyStreak) {
+        if (isVioletTrap) {
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery: Violet Trap Detected" };
+        } else if (isHeavyStreak) {
             prediction = arr[0]; reason = "Deep Recovery: Heavy Streak Lock";
         } else if (isPerfectChop) {
             prediction = OPPOSITE(arr[0]); reason = "Deep Recovery: Perfect Chop Lock";
@@ -125,11 +134,11 @@ function analyzeV15(arr, typeLabel, currentLevel) {
     } 
     // 🟡 PHASE 2: CAUTION MODE (Level 2, 3)
     else if (currentLevel > 0) {
-        if (isStreak) {
+        if (isStreak && !isVioletTrap) {
             prediction = arr[0]; reason = "Recovery: Riding Dominant Streak";
         } else if (isChop) {
             prediction = OPPOSITE(arr[0]); reason = "Recovery: Alternation Synchronization";
-        } else if (isCluster) {
+        } else if (isCluster && !isVioletTrap) {
             prediction = OPPOSITE(arr[0]); reason = "Recovery: Cluster Exhaustion Protocol";
         } else {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "Recovery Mode: Filtering Market Noise" };
@@ -137,13 +146,13 @@ function analyzeV15(arr, typeLabel, currentLevel) {
     } 
     // 🟢 PHASE 1: HIGH FREQUENCY (Level 1)
     else {
-        if (isStreak) {
+        if (isStreak && !isVioletTrap) {
             prediction = arr[0]; reason = "Tier-1 Momentum Alignment";
         } else if (isChop) {
             prediction = OPPOSITE(arr[0]); reason = "Tier-1 Chop Synchronization";
-        } else if (isCluster) {
+        } else if (isCluster && !isVioletTrap) {
             prediction = OPPOSITE(arr[0]); reason = "Double Cluster Alignment";
-        } else if (isBreakout) {
+        } else if (isBreakout && !isVioletTrap) {
             prediction = arr[0]; reason = "Trend Breakout Confirmation";
         } else {
             let countA = 0, countB = 0;
@@ -174,14 +183,14 @@ function analyzeV15(arr, typeLabel, currentLevel) {
 }
 
 function getBestSignal(list, currentLevel) { 
-    // 🚨 FIXED: Reduced from 15 to 10
     if(!list || list.length < 10) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
     
     const sizes = list.map(i => getSize(Number(i.number))); 
     const colors = list.map(i => getColor(Number(i.number))); 
+    const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV15(sizes, "SIZE", currentLevel);
-    let colorSignal = analyzeV15(colors, "COLOR", currentLevel);
+    let sizeSignal = analyzeV16(sizes, rawNums, "SIZE", currentLevel);
+    let colorSignal = analyzeV16(colors, rawNums, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
@@ -287,7 +296,7 @@ async function tick() {
                     if (signal.reason.includes("Volume") || signal.reason.includes("Push")) reasonIcon = "🌊";
                     if (signal.reason.includes("God-Tier")) reasonIcon = "☠️";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟓 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟔 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
