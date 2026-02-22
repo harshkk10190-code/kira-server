@@ -232,7 +232,18 @@ if(state.lastProcessedIssue!==latest && !state.activePrediction){
 
 const signal=getBestSignal(list);
 
-if(signal.action!=="WAIT"){
+if(signal.action==="WAIT"){
+
+await sendTelegram(`
+📡 V18 RADAR
+Period: ${next.slice(-4)}
+Action: WAIT
+Reason: No Safe Edge
+Level: ${state.currentLevel+1}
+`);
+
+}
+else{
 
 let bet=FUND_LEVELS[state.currentLevel];
 
