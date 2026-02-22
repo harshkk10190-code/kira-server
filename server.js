@@ -9,18 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟖 (𝐑𝐄𝐕𝐄𝐑𝐒𝐀𝐋 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>9-Level Matrix Engaged. God-Tier Reversal Logic Active.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟗 (𝐒𝐄𝐐𝐔𝐄𝐍𝐂𝐄 𝐓𝐑𝐀𝐂𝐊𝐄𝐑) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>9-Level Matrix Engaged. Sequence Profitability Tracking Active.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V18 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V19 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAGD3UCiEhDrfjOeObr4Z5pFVJkYIXpCFWI"; 
+const BOT_TOKEN = "8561861801:AAE8stFdYnAYuiXURg5esS-caURtIzx6gRg"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500, 1100, 2400, 5000]; 
@@ -40,8 +40,8 @@ const STATE_FILE = './kira_state.json';
 let state = { 
     lastProcessedIssue: null, 
     activePrediction: null, 
-    totalSignals: 0, 
-    wins: 0, 
+    totalSignals: 0, // Now tracks Total Sequences
+    wins: 0,         // Now tracks Successful Sequences
     isStarted: false, 
     currentLevel: 0,
     consecutiveWaits: 0 
@@ -69,18 +69,18 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟖 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Reversal Matrix Activated.\nGod-Tier Anti-Trap Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟗 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Reversal Matrix Activated.\nSequence Profitability Tracker Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V18 BRAIN (REVERSAL ENGINE) 
+// 🧠 QUANTUM V19 BRAIN 
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV18(arr, rawNums, typeLabel, currentLevel) {
+function analyzeV19(arr, rawNums, typeLabel, currentLevel) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -105,8 +105,7 @@ function analyzeV18(arr, rawNums, typeLabel, currentLevel) {
     let isCluster = (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]); 
     let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
 
-    // ☠️ PHASE 4: GOD-TIER REVERSAL (Levels 6, 7, 8, 9)
-    // Removed "Streak Riding". Deep levels only play reversals and chops to avoid trap numbers.
+    // ☠️ PHASE 4: GOD-TIER REVERSAL
     if (currentLevel >= 5) {
         if (isVioletTrap) {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "God-Tier Sniper: Violet Trap Detected" };
@@ -118,7 +117,7 @@ function analyzeV18(arr, rawNums, typeLabel, currentLevel) {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "God-Tier Sniper: Awaiting Reversal Setup" };
         }
     }
-    // 🔴 PHASE 3: DEEP RECOVERY LOCKDOWN (Level 4, 5)
+    // 🔴 PHASE 3: DEEP RECOVERY LOCKDOWN
     else if (currentLevel >= 3) {
         if (isVioletTrap) {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery: Violet Trap Detected" };
@@ -130,7 +129,7 @@ function analyzeV18(arr, rawNums, typeLabel, currentLevel) {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery Protocol: Awaiting Tier-1 Setup" };
         }
     } 
-    // 🟡 PHASE 2: CAUTION MODE (Level 2, 3)
+    // 🟡 PHASE 2: CAUTION MODE
     else if (currentLevel > 0) {
         if (isStreak && !isVioletTrap) {
             prediction = arr[0]; reason = "Recovery: Riding Dominant Streak";
@@ -142,7 +141,7 @@ function analyzeV18(arr, rawNums, typeLabel, currentLevel) {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "Recovery Mode: Filtering Market Noise" };
         }
     } 
-    // 🟢 PHASE 1: HIGH FREQUENCY (Level 1)
+    // 🟢 PHASE 1: HIGH FREQUENCY
     else {
         if (isStreak && !isVioletTrap) {
             prediction = arr[0]; reason = "Tier-1 Momentum Alignment";
@@ -187,8 +186,8 @@ function getBestSignal(list, currentLevel) {
     const colors = list.map(i => getColor(Number(i.number))); 
     const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV18(sizes, rawNums, "SIZE", currentLevel);
-    let colorSignal = analyzeV18(colors, rawNums, "COLOR", currentLevel);
+    let sizeSignal = analyzeV19(sizes, rawNums, "SIZE", currentLevel);
+    let colorSignal = analyzeV19(colors, rawNums, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
@@ -229,18 +228,21 @@ async function tick() {
                     let actualResult = state.activePrediction.type === "SIZE" ? getSize(actualNum) : getColor(actualNum); 
                     let isWin = (actualResult === state.activePrediction.pred); 
                     
-                    state.totalSignals++; 
                     if(isWin) { 
-                        state.wins++; 
+                        state.wins++; // Successful Sequence Completed
+                        state.totalSignals++; // Total Sequence incremented
                         state.currentLevel = 0; 
                         state.consecutiveWaits = 0; 
                     } else { 
                         state.currentLevel++; 
                         state.consecutiveWaits = 0; 
-                        if(state.currentLevel >= FUND_LEVELS.length) state.currentLevel = 0; 
+                        if(state.currentLevel >= FUND_LEVELS.length) {
+                            state.totalSignals++; // Failed Sequence (Max Level hit)
+                            state.currentLevel = 0; 
+                        }
                     } 
                     
-                    let currentAccuracy = Math.round((state.wins / state.totalSignals) * 100); 
+                    let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
                     
                     let resMsg = isWin ? `✅ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐄𝐋𝐈𝐌𝐈𝐍𝐀𝐓𝐄𝐃</b> ✅\n` : `❌ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> ❌\n`; 
                     resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
@@ -254,7 +256,8 @@ async function tick() {
                         resMsg += `🛡️ 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>ESCALATING (L${state.currentLevel + 1})</b>\n`; 
                     }
                     
-                    resMsg += `🏆 𝐖𝐢𝐧 𝐑𝐚𝐭𝐞 : <b>${currentAccuracy}%</b>\n`; 
+                    // 🌟 NEW PSYCHOLOGICAL UI
+                    resMsg += `🎯 𝐒𝐞𝐪𝐮𝐞𝐧𝐜𝐞 𝐒𝐮𝐜𝐜𝐞𝐬𝐬: <b>${currentAccuracy}%</b>\n`; 
                     resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.currentLevel === 0 ? '1' : state.currentLevel + 1}</b>\n`; 
                     
                     await sendTelegram(resMsg); 
@@ -276,6 +279,7 @@ async function tick() {
                     msg += `⏱ System will resume normal High-Frequency scanning now.`;
                     
                     await sendTelegram(msg);
+                    state.totalSignals++; // Register the Circuit Breaker trip as a sequence loss
                     state.currentLevel = 0; 
                     state.consecutiveWaits = 0; 
                     saveState();
@@ -317,7 +321,7 @@ async function tick() {
                     if (signal.reason.includes("Volume") || signal.reason.includes("Push")) reasonIcon = "🌊";
                     if (signal.reason.includes("God-Tier")) reasonIcon = "☠️";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟖 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟗 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
