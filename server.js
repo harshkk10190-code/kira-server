@@ -9,22 +9,22 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟕 (𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>9-Level Matrix Engaged. 15-Minute Timeout Reset Active.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟖 (𝐑𝐄𝐕𝐄𝐑𝐒𝐀𝐋 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>9-Level Matrix Engaged. God-Tier Reversal Logic Active.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V17 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V18 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAHZ4VGICuwOqoh79-m7mVX_j34jUSLrAxk"; 
+const BOT_TOKEN = "8561861801:AAGD3UCiEhDrfjOeObr4Z5pFVJkYIXpCFWI"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 const FUND_LEVELS = [33, 66, 100, 133, 168, 500, 1100, 2400, 5000]; 
-const MAX_WAIT_STREAK = 15; // 🚨 Triggers Circuit Breaker after 15 consecutive WAITs
+const MAX_WAIT_STREAK = 15; 
 
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
@@ -44,7 +44,7 @@ let state = {
     wins: 0, 
     isStarted: false, 
     currentLevel: 0,
-    consecutiveWaits: 0 // 🌟 New variable to track WAIT timeout
+    consecutiveWaits: 0 
 }; 
 
 function loadState() { 
@@ -69,18 +69,18 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟕 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Number-Aware Matrix Activated.\nTimeout Circuit Breaker Engaged.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟖 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Reversal Matrix Activated.\nGod-Tier Anti-Trap Engaged.</i>`; 
     sendTelegram(bootMsg); 
     state.isStarted = true; saveState(); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V17 BRAIN 
+// 🧠 QUANTUM V18 BRAIN (REVERSAL ENGINE) 
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV17(arr, rawNums, typeLabel, currentLevel) {
+function analyzeV18(arr, rawNums, typeLabel, currentLevel) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -95,7 +95,6 @@ function analyzeV17(arr, rawNums, typeLabel, currentLevel) {
     let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5 || rawNums[1] === 0 || rawNums[1] === 5);
 
     let isDeathStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3] && arr[3] === arr[4] && arr[4] === arr[5]); 
-    let isGodStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3] && arr[3] === arr[4]); 
     let isGodChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3] && arr[3] !== arr[4] && arr[4] !== arr[5]);
     
     let isHeavyStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
@@ -106,18 +105,17 @@ function analyzeV17(arr, rawNums, typeLabel, currentLevel) {
     let isCluster = (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]); 
     let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
 
-    // ☠️ PHASE 4: GOD-TIER SNIPER (Levels 6, 7, 8, 9)
+    // ☠️ PHASE 4: GOD-TIER REVERSAL (Levels 6, 7, 8, 9)
+    // Removed "Streak Riding". Deep levels only play reversals and chops to avoid trap numbers.
     if (currentLevel >= 5) {
         if (isVioletTrap) {
             return { type: typeLabel, action: "WAIT", conf: 0, reason: "God-Tier Sniper: Violet Trap Detected" };
         } else if (isDeathStreak) {
             prediction = OPPOSITE(arr[0]); reason = "God-Tier: Death Streak Reversal";
-        } else if (isGodStreak) {
-            prediction = arr[0]; reason = "God-Tier: Supreme Streak Lock";
         } else if (isGodChop) {
             prediction = OPPOSITE(arr[0]); reason = "God-Tier: Supreme Chop Lock";
         } else {
-            return { type: typeLabel, action: "WAIT", conf: 0, reason: "God-Tier Sniper: Awaiting Flawless Setup" };
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "God-Tier Sniper: Awaiting Reversal Setup" };
         }
     }
     // 🔴 PHASE 3: DEEP RECOVERY LOCKDOWN (Level 4, 5)
@@ -189,8 +187,8 @@ function getBestSignal(list, currentLevel) {
     const colors = list.map(i => getColor(Number(i.number))); 
     const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV17(sizes, rawNums, "SIZE", currentLevel);
-    let colorSignal = analyzeV17(colors, rawNums, "COLOR", currentLevel);
+    let sizeSignal = analyzeV18(sizes, rawNums, "SIZE", currentLevel);
+    let colorSignal = analyzeV18(colors, rawNums, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
@@ -235,10 +233,10 @@ async function tick() {
                     if(isWin) { 
                         state.wins++; 
                         state.currentLevel = 0; 
-                        state.consecutiveWaits = 0; // Reset wait timer on win
+                        state.consecutiveWaits = 0; 
                     } else { 
                         state.currentLevel++; 
-                        state.consecutiveWaits = 0; // Reset wait timer on loss escalation
+                        state.consecutiveWaits = 0; 
                         if(state.currentLevel >= FUND_LEVELS.length) state.currentLevel = 0; 
                     } 
                     
@@ -269,7 +267,6 @@ async function tick() {
         if(state.lastProcessedIssue !== latestIssue) { 
             if(!state.activePrediction) { 
                 
-                // 🚨 CIRCUIT BREAKER CHECK
                 if (state.consecutiveWaits >= MAX_WAIT_STREAK) {
                     let msg = `⚡️ <b>𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑 𝐓𝐑𝐈𝐏𝐏𝐄𝐃</b> ⚡️\n`;
                     msg += `━━━━━━━━━━━━━━━━━━\n`;
@@ -279,16 +276,16 @@ async function tick() {
                     msg += `⏱ System will resume normal High-Frequency scanning now.`;
                     
                     await sendTelegram(msg);
-                    state.currentLevel = 0; // Reset to Level 1
-                    state.consecutiveWaits = 0; // Reset wait timer
+                    state.currentLevel = 0; 
+                    state.consecutiveWaits = 0; 
                     saveState();
-                    return; // Skip this tick to let the reset process
+                    return; 
                 }
 
                 const signal = getBestSignal(list, state.currentLevel); 
                 
                 if(signal && signal.action === "WAIT") { 
-                    state.consecutiveWaits++; // Increment the wait timer
+                    state.consecutiveWaits++; 
                     
                     let msg = `📡 <b>𝐊𝐈𝐑𝐀 𝐑𝐀𝐃𝐀𝐑 𝐒𝐂𝐀𝐍</b> 📡\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
@@ -299,7 +296,7 @@ async function tick() {
                     await sendTelegram(msg); 
                     saveState();
                 } else if(signal) { 
-                    state.consecutiveWaits = 0; // Reset wait timer because a signal fired
+                    state.consecutiveWaits = 0; 
                     
                     let signalEmoji = signal.type === "COLOR" ? "🎨" : "📏"; 
                     let betAmount = FUND_LEVELS[state.currentLevel]; 
@@ -320,7 +317,7 @@ async function tick() {
                     if (signal.reason.includes("Volume") || signal.reason.includes("Push")) reasonIcon = "🌊";
                     if (signal.reason.includes("God-Tier")) reasonIcon = "☠️";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟕 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟏𝟖 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
