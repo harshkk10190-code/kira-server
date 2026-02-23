@@ -9,24 +9,24 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟒 (𝐒𝐓𝐄𝐀𝐋𝐓𝐇 𝐋𝐎𝐂𝐊) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>Ghost Betting Active. Absolute Stealth Lock Engaged.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟕 (𝐀𝐍𝐓𝐈-𝐂𝐑𝐎𝐖𝐃 𝐄𝐍𝐆𝐈𝐍𝐄) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>Liability Sniping Active. Betting against human psychology.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V24 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V27 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAGV2vDT36ka-psFp6Ah095JmskvCPWxR9Q"; 
+const BOT_TOKEN = "8561861801:AAFODC-ho2yoIZ5NVuJzh71NrsaogPQFu-4"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 
-const GHOST_THRESHOLD = 3; 
-const REAL_FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
-const MAX_WAIT_STREAK = 15; 
+// Locked to 6 Levels. We are forcing the win early by playing with the casino's algorithm.
+const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
+const MAX_WAIT_STREAK = 12; 
 
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
@@ -45,9 +45,7 @@ let state = {
     totalSignals: 0, 
     wins: 0, 
     isStarted: false, 
-    isShadowMode: true,  // 👻 Starts securely in stealth
-    virtualLevel: 0,     
-    realLevel: 0,        
+    currentLevel: 0,
     consecutiveWaits: 0 
 }; 
 
@@ -60,10 +58,7 @@ function loadState() {
 function saveState() { fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2)); } 
 loadState(); 
 
-// 🚨 FIXED: Added "force" parameter to bypass stealth ONLY for specific messages
-async function sendTelegram(text, force = false) { 
-    if (state.isShadowMode && !force) return; 
-
+async function sendTelegram(text) { 
     for (let chat_id of TARGET_CHATS) { 
         try { 
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { 
@@ -76,22 +71,19 @@ async function sendTelegram(text, force = false) {
 } 
 
 if (!state.isStarted) { 
-    // 🚨 FIXED: Bot is instantly locked in Ghost Mode. Race condition eliminated.
-    state.isShadowMode = true; 
     state.isStarted = true; 
     saveState(); 
-
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟒 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Perfected Matrix Activated.\nAbsolute Stealth Lock Engaged.</i>\n\n⏱ <i>Bot is currently running silent background simulations. Signals will only broadcast when probability > 96%.</i>`; 
-    sendTelegram(bootMsg, true); // 'true' forces it to send even while hidden
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟕 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Anti-Crowd Engine Activated.\nLiability Sniping Protocol Engaged.</i>\n\n⏱ <i>Bot is now analyzing human psychology to bet AGAINST the public crowd.</i>`; 
+    sendTelegram(bootMsg); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V24 BRAIN (DUAL LOGIC)
+// 🧠 QUANTUM V27 BRAIN (ANTI-CROWD LOGIC)
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV24(arr, rawNums, typeLabel, currentLevel, isShadowMode) {
+function analyzeV27(arr, rawNums, typeLabel, currentLevel) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -105,39 +97,57 @@ function analyzeV24(arr, rawNums, typeLabel, currentLevel, isShadowMode) {
 
     let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5 || rawNums[1] === 0 || rawNums[1] === 5);
 
-    let isPerfectChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3] && arr[3] !== arr[4]);
-    let isChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3]); 
-    let isStreak = (arr[0] === arr[1] && arr[1] === arr[2]); 
-    let isCluster = (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]); 
-    let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
+    // If Violet drops, the casino just swept the board. We wait 1 period for humans to place new bets.
+    if (isVioletTrap) return { type: typeLabel, action: "WAIT", conf: 0, reason: "Casino Swept Board: Waiting for humans to place new bets..." };
 
-    // 🛡️ UNIVERSAL VIOLET SHIELD
-    if (isVioletTrap) {
-        return { type: typeLabel, action: "WAIT", conf: 0, reason: "Market Unstable: Violet Trap Detected" };
-    }
+    // 🧠 HUMAN PSYCHOLOGY TRAPS:
 
-    // 🔴 REAL USER DEEP RECOVERY (Levels 4, 5, 6) -> STRICT ANTI-BAIT
-    if (!isShadowMode && currentLevel >= 3) {
-        if (isPerfectChop) {
-            prediction = OPPOSITE(arr[0]); reason = "Deep Recovery: Perfect Chop Lock";
-        } else if (isBreakout) {
-            prediction = arr[0]; reason = "Deep Recovery: Safe Post-Streak Breakout";
+    // 1. THE OBVIOUS STREAK (Humans see 3 or 4 in a row and bet heavily on the 4th/5th)
+    let isObviousStreak = (arr[0] === arr[1] && arr[1] === arr[2]); 
+    let isDeepStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
+
+    // 2. THE OBVIOUS CHOP (Humans see R-G-R-G and bet heavily on R)
+    let isObviousChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3]); 
+
+    // 3. THE RECENT BREAKOUT (Humans see a streak break and instantly bet the new color)
+    let isFreshBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
+
+    // 🎯 THE ANTI-CROWD EXECUTION:
+    // We do the EXACT OPPOSITE of what a normal human player would do.
+
+    if (currentLevel >= 3) {
+        // Deep levels: Casino is hunting. We play extreme contrarian.
+        if (isDeepStreak) {
+            prediction = OPPOSITE(arr[0]); // Humans bet Streak. We bet Reversal.
+            reason = "Anti-Crowd: Sweeping Heavy Streak";
+        } else if (isObviousChop) {
+            prediction = arr[0]; // Humans bet Alternation. We bet Duplicate to break their chop.
+            reason = "Anti-Crowd: Breaking Obvious Chop";
         } else {
-            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery Protocol: Awaiting Flawless Setup" };
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery: Awaiting Heavy Human Liability" };
         }
-    } 
-    // 🟢 GHOST MODE OR REAL USER L1/L2/L3 -> AGGRESSIVE TIER-S
-    else {
-        if (isPerfectChop || isChop) {
-            prediction = OPPOSITE(arr[0]); reason = "Tier-S: Alternation Synchronization";
-        } else if (isBreakout) {
-            prediction = arr[0]; reason = "Tier-S: Trend Breakout Confirmation";
-        } else if (isCluster) {
-            prediction = OPPOSITE(arr[0]); reason = "Tier-S: Cluster Exhaustion Protocol";
-        } else if (isStreak) {
-            prediction = arr[0]; reason = "Tier-S: Riding Dominant Streak";
+    } else {
+        // Early levels: Capitalize on common human mistakes
+        if (isFreshBreakout) {
+            prediction = OPPOSITE(arr[0]); // Humans follow breakout. We bet it fakes out and returns.
+            reason = "Liability Snipe: Fading the Breakout";
+        } else if (isObviousStreak) {
+            prediction = OPPOSITE(arr[0]); // Fade the streak early before the casino does
+            reason = "Liability Snipe: Pre-emptive Streak Break";
+        } else if (isObviousChop) {
+            prediction = arr[0]; // Break the chop
+            reason = "Liability Snipe: Breaking Obvious Chop";
         } else {
-            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Filtering Market Noise" };
+            // Volume trap: Look at last 5. If 4 are BIG, humans bet SMALL (mean reversion). So we bet BIG.
+            let countA = 0; let valA = arr[0];
+            for (let i=0; i<5; i++) { if(arr[i] === valA) countA++; }
+            
+            if (countA >= 4) {
+                prediction = valA;
+                reason = "Anti-Crowd: Fading Human Mean Reversion";
+            } else {
+                return { type: typeLabel, action: "WAIT", conf: 0, reason: "Market Balanced: Waiting for Crowd Imbalance" };
+            }
         }
     }
 
@@ -145,22 +155,23 @@ function analyzeV24(arr, rawNums, typeLabel, currentLevel, isShadowMode) {
     return { type: typeLabel, action: prediction, conf: confidence, reason: reason };
 }
 
-function getBestSignal(list, currentLevel, isShadowMode) { 
+function getBestSignal(list, currentLevel) { 
     if(!list || list.length < 10) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
     
     const sizes = list.map(i => getSize(Number(i.number))); 
     const colors = list.map(i => getColor(Number(i.number))); 
     const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV24(sizes, rawNums, "SIZE", currentLevel, isShadowMode);
-    let colorSignal = analyzeV24(colors, rawNums, "COLOR", currentLevel, isShadowMode);
+    let sizeSignal = analyzeV27(sizes, rawNums, "SIZE", currentLevel);
+    let colorSignal = analyzeV27(colors, rawNums, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
     }
 
-    if (sizeSignal.conf >= colorSignal.conf) return sizeSignal;
-    return colorSignal;
+    if (sizeSignal.conf >= colorSignal.conf && sizeSignal.action !== "WAIT") return sizeSignal;
+    if (colorSignal.action !== "WAIT") return colorSignal;
+    return sizeSignal;
 } 
 
 // ========================================== 
@@ -175,7 +186,7 @@ async function tick() {
     try { 
         const res = await fetch(API + "&_t=" + Date.now(), { headers: HEADERS, timeout: 8000 }); 
         const data = await res.json(); 
-        if(!data.data || !data.data.list) throw new Error("API returned invalid JSON structure"); 
+        if(!data.data || !data.data.list) throw new Error("API Issue"); 
         
         const list = data.data.list; 
         const latestIssue = list[0].issueNumber; 
@@ -189,18 +200,11 @@ async function tick() {
         if(state.activePrediction) { 
             let timeElapsed = Date.now() - state.activePrediction.timestamp;
             if (timeElapsed > 4 * 60 * 1000) { 
-                console.log(`[TIMEOUT] API stuck for 4 mins on period ${state.activePrediction.period}. Resetting.`);
-                if (!state.isShadowMode) {
-                    let msg = `⚠️ <b>𝐀𝐏𝐈 𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍 𝐋𝐎𝐒𝐓</b> ⚠️\n`;
-                    msg += `━━━━━━━━━━━━━━━━━━\n`;
-                    msg += `The Casino server is lagging and refusing to output results for Period ${state.activePrediction.period}.\n`;
-                    msg += `🔄 <b>Trade Cancelled. Funds Safe. Resetting matrix to avoid traps.</b>`;
-                    await sendTelegram(msg);
-                }
+                let msg = `⚠️ <b>𝐀𝐏𝐈 𝐋𝐀𝐆 𝐃𝐄𝐓𝐄𝐂𝐓𝐄𝐃</b> ⚠️\n`;
+                msg += `━━━━━━━━━━━━━━━━━━\n`;
+                msg += `🔄 <b>Trade Cancelled. Waiting for Casino to settle liability.</b>`;
+                await sendTelegram(msg);
                 state.activePrediction = null;
-                state.isShadowMode = true;
-                state.realLevel = 0;
-                state.virtualLevel = 0;
                 saveState();
                 return;
             }
@@ -212,60 +216,38 @@ async function tick() {
                     let actualResult = state.activePrediction.type === "SIZE" ? getSize(actualNum) : getColor(actualNum); 
                     let isWin = (actualResult === state.activePrediction.pred); 
                     
-                    if (state.isShadowMode) {
-                        if (isWin) {
-                            console.log(`[GHOST] Won at Virtual Level ${state.virtualLevel + 1}. Resetting ghost.`);
-                            state.virtualLevel = 0; 
-                        } else {
-                            state.virtualLevel++;
-                            console.log(`[GHOST] Lost. Escalating to Virtual Level ${state.virtualLevel + 1}`);
-                            
-                            if (state.virtualLevel >= GHOST_THRESHOLD) {
-                                console.log(`[GHOST] Absorbed 3 losses. Deploying real signal to Telegram!`);
-                                state.isShadowMode = false; 
-                                state.realLevel = 0; 
-                            }
+                    if(isWin) { 
+                        state.wins++; 
+                        state.totalSignals++; 
+                        state.currentLevel = 0; 
+                        state.consecutiveWaits = 0;
+                    } else { 
+                        state.currentLevel++; 
+                        state.consecutiveWaits = 0;
+                        if(state.currentLevel >= FUND_LEVELS.length) {
+                            state.totalSignals++; 
+                            state.currentLevel = 0; 
                         }
                     } 
-                    else {
-                        if(isWin) { 
-                            state.wins++; 
-                            state.totalSignals++; 
-                            state.realLevel = 0; 
-                            state.virtualLevel = 0;
-                            state.isShadowMode = true; 
-                            state.consecutiveWaits = 0; 
-                        } else { 
-                            state.realLevel++; 
-                            state.consecutiveWaits = 0; 
-                            if(state.realLevel >= REAL_FUND_LEVELS.length) {
-                                state.totalSignals++; 
-                                state.realLevel = 0; 
-                                state.virtualLevel = 0;
-                                state.isShadowMode = true; 
-                            }
-                        } 
-                        
-                        let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
-                        
-                        let resMsg = isWin ? `✅ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐄𝐋𝐈𝐌𝐈𝐍𝐀𝐓𝐄𝐃</b> ✅\n` : `❌ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> ❌\n`; 
-                        resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
-                        resMsg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝  : <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
-                        resMsg += `🎲 𝐑𝐞𝐬𝐮𝐥𝐭  : <b>${actualNum} (${actualResult})</b>\n`; 
-                        resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
-                        
-                        if(isWin) {
-                            resMsg += `💰 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>PROFIT SECURED!</b>\n`; 
-                            resMsg += `👻 <i>Engine returning to Shadow Mode...</i>\n`;
-                        } else {
-                            resMsg += `🛡️ 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>ESCALATING (L${state.realLevel + 1})</b>\n`; 
-                        }
-                        
-                        resMsg += `🎯 𝐒𝐞𝐪𝐮𝐞𝐧𝐜𝐞 𝐒𝐮𝐜𝐜𝐞𝐬𝐬: <b>${currentAccuracy}%</b>\n`; 
-                        if (!isWin) resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.realLevel + 1}</b>\n`; 
-                        
-                        await sendTelegram(resMsg); 
+                    
+                    let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
+                    
+                    let resMsg = isWin ? `✅ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐄𝐋𝐈𝐌𝐈𝐍𝐀𝐓𝐄𝐃</b> ✅\n` : `❌ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> ❌\n`; 
+                    resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
+                    resMsg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝  : <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
+                    resMsg += `🎲 𝐑𝐞𝐬𝐮𝐥𝐭  : <b>${actualNum} (${actualResult})</b>\n`; 
+                    resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
+                    
+                    if(isWin) {
+                        resMsg += `💰 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>PROFIT SECURED!</b>\n`; 
+                    } else {
+                        resMsg += `🛡️ 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>ESCALATING (L${state.currentLevel + 1})</b>\n`; 
                     }
+                    
+                    resMsg += `🎯 𝐒𝐞𝐪𝐮𝐞𝐧𝐜𝐞 𝐒𝐮𝐜𝐜𝐞𝐬𝐬: <b>${currentAccuracy}%</b>\n`; 
+                    if (!isWin) resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.currentLevel + 1}</b>\n`; 
+                    
+                    await sendTelegram(resMsg); 
                 } 
                 state.activePrediction = null; saveState(); 
             } 
@@ -274,61 +256,47 @@ async function tick() {
         // 2️⃣ GENERATE NEW PREDICTION 
         if(state.lastProcessedIssue !== latestIssue) { 
             if(!state.activePrediction) { 
-                
-                let currentMaxWait = 15; 
-                if (state.realLevel >= 3) currentMaxWait = 8; 
 
-                if (!state.isShadowMode && state.consecutiveWaits >= currentMaxWait) {
+                if (state.consecutiveWaits >= MAX_WAIT_STREAK && state.currentLevel > 0) {
                     let msg = `⚡️ <b>𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑 𝐓𝐑𝐈𝐏𝐏𝐄𝐃</b> ⚡️\n`;
                     msg += `━━━━━━━━━━━━━━━━━━\n`;
-                    msg += `⚠️ Market manipulation detected.\n`;
-                    msg += `🔄 <b>Resetting sequence to protect capital.</b>\n`;
+                    msg += `⚠️ Extreme liability trap detected.\n`;
+                    msg += `🔄 <b>Resetting sequence to Level 1 to protect capital.</b>\n`;
                     
                     await sendTelegram(msg);
                     state.totalSignals++; 
-                    state.realLevel = 0; 
-                    state.virtualLevel = 0;
+                    state.currentLevel = 0; 
                     state.consecutiveWaits = 0; 
-                    state.isShadowMode = true; 
                     saveState();
                     return; 
                 }
 
-                const signal = getBestSignal(list, state.realLevel, state.isShadowMode); 
+                const signal = getBestSignal(list, state.currentLevel); 
                 
                 if(signal && signal.action === "WAIT") { 
-                    if (!state.isShadowMode) {
-                        state.consecutiveWaits++; 
-                        let msg = `📡 <b>𝐊𝐈𝐑𝐀 𝐑𝐀𝐃𝐀𝐑 𝐒𝐂𝐀𝐍</b> 📡\n`; 
-                        msg += `━━━━━━━━━━━━━━━━━━\n`; 
-                        msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
-                        msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n`; 
-                        msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`; 
-                        msg += `⏱ <i>Awaiting optimal market conditions... (${state.consecutiveWaits}/${currentMaxWait})</i>`;
-                        await sendTelegram(msg); 
-                    }
+                    state.consecutiveWaits++;
+                    let msg = `📡 <b>𝐊𝐈𝐑𝐀 𝐑𝐀𝐃𝐀𝐑 𝐒𝐂𝐀𝐍</b> 📡\n`; 
+                    msg += `━━━━━━━━━━━━━━━━━━\n`; 
+                    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
+                    msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n`; 
+                    msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`;
+                    if (state.currentLevel > 0) msg += `⏱ <i>(${state.consecutiveWaits}/${MAX_WAIT_STREAK})</i>`;
+                    await sendTelegram(msg); 
                     saveState();
                 } else if(signal) { 
-                    state.consecutiveWaits = 0; 
+                    state.consecutiveWaits = 0;
                     
-                    if (state.isShadowMode) {
-                        console.log(`[GHOST] Period ${targetIssue} | Betting ${signal.action} at Virtual Level ${state.virtualLevel + 1}`);
-                        state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf, timestamp: Date.now() }; 
-                        saveState();
-                        return;
-                    }
-
                     let signalEmoji = signal.type === "COLOR" ? "🎨" : "📏"; 
-                    let betAmount = REAL_FUND_LEVELS[state.realLevel]; 
+                    let betAmount = FUND_LEVELS[state.currentLevel]; 
 
                     let threatLevel = "🟢 𝐒𝐓𝐀𝐍𝐃𝐀𝐑𝐃 𝐄𝐍𝐓𝐑𝐘";
-                    if (state.realLevel >= 1) threatLevel = "🟡 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘 𝐏𝐑𝐎𝐓𝐎𝐂𝐎𝐋";
-                    if (state.realLevel >= 3) threatLevel = "🔴 𝐃𝐄𝐄𝐏 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘 𝐋𝐎𝐂𝐊𝐃𝐎𝐖𝐍";
+                    if (state.currentLevel >= 1) threatLevel = "🟡 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘 𝐏𝐑𝐎𝐓𝐎𝐂𝐎𝐋";
+                    if (state.currentLevel >= 3) threatLevel = "🔴 𝐃𝐄𝐄𝐏 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘";
 
                     let bar = "🟩🟩🟩🟩🟩";
-                    if (signal.conf < 96) bar = "🟩🟩🟩🟩⬜";
-
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟒 ⚡️\n`; 
+                    if (signal.conf < 95) bar = "🟩🟩🟩🟩⬜";
+                    
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟕 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
@@ -336,8 +304,8 @@ async function tick() {
                     msg += `📊 𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞: ${bar} <b>${signal.conf}%</b>\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `⚠️ <b>${threatLevel}</b>\n`; 
-                    msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 (𝐋${state.realLevel + 1}): Rs. ${betAmount}</b>\n`; 
-                    msg += `⚙️ <i>${signal.reason}</i>`; 
+                    msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 (𝐋${state.currentLevel + 1}): Rs. ${betAmount}</b>\n`; 
+                    msg += `🧠 <i>${signal.reason}</i>`; 
                     
                     await sendTelegram(msg); 
                     state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf, timestamp: Date.now() }; 
@@ -347,7 +315,7 @@ async function tick() {
             state.lastProcessedIssue = latestIssue; saveState(); 
         } 
     } catch (e) {
-        console.log(`[API ERROR] Fetch failed: ${e.message}`);
+        console.log(`[API ERROR] ${e.message}`);
     } finally { 
         isProcessing = false; 
     } 
