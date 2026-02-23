@@ -9,18 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟑 (𝐓𝐇𝐄 𝐏𝐄𝐑𝐅𝐄𝐂𝐓𝐄𝐃 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>Ghost Betting Active. Strict Deep Recovery Lockdown Restored.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟒 (𝐒𝐓𝐄𝐀𝐋𝐓𝐇 𝐋𝐎𝐂𝐊) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>Ghost Betting Active. Absolute Stealth Lock Engaged.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V23 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V24 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAFksAlSdkVnPorKdlHHBB6taaLAUXfSY2k"; 
+const BOT_TOKEN = "8561861801:AAGV2vDT36ka-psFp6Ah095JmskvCPWxR9Q"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 
@@ -45,7 +45,7 @@ let state = {
     totalSignals: 0, 
     wins: 0, 
     isStarted: false, 
-    isShadowMode: true,  
+    isShadowMode: true,  // 👻 Starts securely in stealth
     virtualLevel: 0,     
     realLevel: 0,        
     consecutiveWaits: 0 
@@ -60,8 +60,9 @@ function loadState() {
 function saveState() { fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2)); } 
 loadState(); 
 
-async function sendTelegram(text) { 
-    if (state.isShadowMode) return; 
+// 🚨 FIXED: Added "force" parameter to bypass stealth ONLY for specific messages
+async function sendTelegram(text, force = false) { 
+    if (state.isShadowMode && !force) return; 
 
     for (let chat_id of TARGET_CHATS) { 
         try { 
@@ -75,22 +76,22 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    state.isShadowMode = false; 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟑 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Perfected Matrix Activated.\nAnti-Bait Lockdown Restored.</i>\n\n⏱ <i>Bot is currently running silent background simulations. Signals will only broadcast when probability > 96%.</i>`; 
-    sendTelegram(bootMsg).then(() => {
-        state.isShadowMode = true; 
-        state.isStarted = true; 
-        saveState(); 
-    });
+    // 🚨 FIXED: Bot is instantly locked in Ghost Mode. Race condition eliminated.
+    state.isShadowMode = true; 
+    state.isStarted = true; 
+    saveState(); 
+
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟒 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Perfected Matrix Activated.\nAbsolute Stealth Lock Engaged.</i>\n\n⏱ <i>Bot is currently running silent background simulations. Signals will only broadcast when probability > 96%.</i>`; 
+    sendTelegram(bootMsg, true); // 'true' forces it to send even while hidden
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V23 BRAIN (DUAL LOGIC)
+// 🧠 QUANTUM V24 BRAIN (DUAL LOGIC)
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV23(arr, rawNums, typeLabel, currentLevel, isShadowMode) {
+function analyzeV24(arr, rawNums, typeLabel, currentLevel, isShadowMode) {
     if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
@@ -151,8 +152,8 @@ function getBestSignal(list, currentLevel, isShadowMode) {
     const colors = list.map(i => getColor(Number(i.number))); 
     const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV23(sizes, rawNums, "SIZE", currentLevel, isShadowMode);
-    let colorSignal = analyzeV23(colors, rawNums, "COLOR", currentLevel, isShadowMode);
+    let sizeSignal = analyzeV24(sizes, rawNums, "SIZE", currentLevel, isShadowMode);
+    let colorSignal = analyzeV24(colors, rawNums, "COLOR", currentLevel, isShadowMode);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
@@ -227,10 +228,9 @@ async function tick() {
                         }
                     } 
                     else {
-                        // 🚨 MATH FIX: Only update totalSignals on Sequence WIN or Sequence MAX LOSS
                         if(isWin) { 
                             state.wins++; 
-                            state.totalSignals++; // Full Sequence Won
+                            state.totalSignals++; 
                             state.realLevel = 0; 
                             state.virtualLevel = 0;
                             state.isShadowMode = true; 
@@ -239,7 +239,7 @@ async function tick() {
                             state.realLevel++; 
                             state.consecutiveWaits = 0; 
                             if(state.realLevel >= REAL_FUND_LEVELS.length) {
-                                state.totalSignals++; // Full Sequence Lost
+                                state.totalSignals++; 
                                 state.realLevel = 0; 
                                 state.virtualLevel = 0;
                                 state.isShadowMode = true; 
@@ -276,7 +276,7 @@ async function tick() {
             if(!state.activePrediction) { 
                 
                 let currentMaxWait = 15; 
-                if (state.realLevel >= 3) currentMaxWait = 8; // Eject faster if we are in deep recovery
+                if (state.realLevel >= 3) currentMaxWait = 8; 
 
                 if (!state.isShadowMode && state.consecutiveWaits >= currentMaxWait) {
                     let msg = `⚡️ <b>𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑 𝐓𝐑𝐈𝐏𝐏𝐄𝐃</b> ⚡️\n`;
@@ -285,7 +285,7 @@ async function tick() {
                     msg += `🔄 <b>Resetting sequence to protect capital.</b>\n`;
                     
                     await sendTelegram(msg);
-                    state.totalSignals++; // Count circuit breaker as sequence loss
+                    state.totalSignals++; 
                     state.realLevel = 0; 
                     state.virtualLevel = 0;
                     state.consecutiveWaits = 0; 
@@ -294,7 +294,6 @@ async function tick() {
                     return; 
                 }
 
-                // Pass the shadow mode state into the analyzer
                 const signal = getBestSignal(list, state.realLevel, state.isShadowMode); 
                 
                 if(signal && signal.action === "WAIT") { 
@@ -329,7 +328,7 @@ async function tick() {
                     let bar = "🟩🟩🟩🟩🟩";
                     if (signal.conf < 96) bar = "🟩🟩🟩🟩⬜";
 
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟑 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟒 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
