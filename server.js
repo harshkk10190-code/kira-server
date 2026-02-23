@@ -9,24 +9,24 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟕 (𝐀𝐍𝐓𝐈-𝐂𝐑𝐎𝐖𝐃 𝐄𝐍𝐆𝐈𝐍𝐄) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>Liability Sniping Active. Betting against human psychology.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟗 (𝐂𝐎𝐍𝐓𝐑𝐎𝐋𝐋𝐄𝐃 𝐁𝐔𝐑𝐍) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>Active Trading Flow. Hard Level 5 Stop-Loss Engaged.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V27 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V29 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAFODC-ho2yoIZ5NVuJzh71NrsaogPQFu-4"; 
+const BOT_TOKEN = "8561861801:AAE-CmAGrhmItFkKCGwOCZZZsqdXem_Zpow"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 
-// Locked to 6 Levels. We are forcing the win early by playing with the casino's algorithm.
-const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
-const MAX_WAIT_STREAK = 12; 
+// 🚨 STRICT 5-LEVEL MAX. We take the L here to survive the war.
+const FUND_LEVELS = [33, 66, 100, 133, 168]; 
+const MAX_WAIT_STREAK = 6; // Keeps frequency high
 
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
@@ -73,18 +73,18 @@ async function sendTelegram(text) {
 if (!state.isStarted) { 
     state.isStarted = true; 
     saveState(); 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟕 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Anti-Crowd Engine Activated.\nLiability Sniping Protocol Engaged.</i>\n\n⏱ <i>Bot is now analyzing human psychology to bet AGAINST the public crowd.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟗 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Active Trading Matrix Engaged.\nStrict Risk Management Online.</i>\n\n⏱ <i>Bot will maintain steady signals. Hard Stop-Loss set at Level 5 to protect user capital.</i>`; 
     sendTelegram(bootMsg); 
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V27 BRAIN (ANTI-CROWD LOGIC)
+// 🧠 QUANTUM V29 BRAIN (STEADY FLOW)
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
 
-function analyzeV27(arr, rawNums, typeLabel, currentLevel) {
-    if (arr.length < 10) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
+function analyzeV29(arr, rawNums, typeLabel, currentLevel) {
+    if (arr.length < 5) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
 
     const OPPOSITE = (val) => {
         if (typeLabel === "SIZE") return val === "BIG" ? "SMALL" : "BIG";
@@ -95,75 +95,46 @@ function analyzeV27(arr, rawNums, typeLabel, currentLevel) {
     let reason = "";
     const getConf = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5 || rawNums[1] === 0 || rawNums[1] === 5);
+    let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5);
+    if (isVioletTrap) return { type: typeLabel, action: "WAIT", conf: 0, reason: "Violet Trap: 1-Minute Reset Pause" };
 
-    // If Violet drops, the casino just swept the board. We wait 1 period for humans to place new bets.
-    if (isVioletTrap) return { type: typeLabel, action: "WAIT", conf: 0, reason: "Casino Swept Board: Waiting for humans to place new bets..." };
-
-    // 🧠 HUMAN PSYCHOLOGY TRAPS:
-
-    // 1. THE OBVIOUS STREAK (Humans see 3 or 4 in a row and bet heavily on the 4th/5th)
-    let isObviousStreak = (arr[0] === arr[1] && arr[1] === arr[2]); 
-    let isDeepStreak = (arr[0] === arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
-
-    // 2. THE OBVIOUS CHOP (Humans see R-G-R-G and bet heavily on R)
-    let isObviousChop = (arr[0] !== arr[1] && arr[1] !== arr[2] && arr[2] !== arr[3]); 
-
-    // 3. THE RECENT BREAKOUT (Humans see a streak break and instantly bet the new color)
-    let isFreshBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
-
-    // 🎯 THE ANTI-CROWD EXECUTION:
-    // We do the EXACT OPPOSITE of what a normal human player would do.
+    let isChop = (arr[0] !== arr[1] && arr[1] !== arr[2]); 
+    let isStreak = (arr[0] === arr[1]); 
+    let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]);
 
     if (currentLevel >= 3) {
-        // Deep levels: Casino is hunting. We play extreme contrarian.
-        if (isDeepStreak) {
-            prediction = OPPOSITE(arr[0]); // Humans bet Streak. We bet Reversal.
-            reason = "Anti-Crowd: Sweeping Heavy Streak";
-        } else if (isObviousChop) {
-            prediction = arr[0]; // Humans bet Alternation. We bet Duplicate to break their chop.
-            reason = "Anti-Crowd: Breaking Obvious Chop";
+        // Play it slightly safer on deep levels
+        if (isChop) {
+            prediction = OPPOSITE(arr[0]); reason = "Recovery: Alternation Flow";
+        } else if (isBreakout) {
+            prediction = arr[0]; reason = "Recovery: Trend Breakout";
         } else {
-            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Deep Recovery: Awaiting Heavy Human Liability" };
+            return { type: typeLabel, action: "WAIT", conf: 0, reason: "Filtering Market Noise" };
         }
     } else {
-        // Early levels: Capitalize on common human mistakes
-        if (isFreshBreakout) {
-            prediction = OPPOSITE(arr[0]); // Humans follow breakout. We bet it fakes out and returns.
-            reason = "Liability Snipe: Fading the Breakout";
-        } else if (isObviousStreak) {
-            prediction = OPPOSITE(arr[0]); // Fade the streak early before the casino does
-            reason = "Liability Snipe: Pre-emptive Streak Break";
-        } else if (isObviousChop) {
-            prediction = arr[0]; // Break the chop
-            reason = "Liability Snipe: Breaking Obvious Chop";
+        // High frequency early levels
+        if (isChop) {
+            prediction = OPPOSITE(arr[0]); reason = "Flow: Riding Alternating Chop";
+        } else if (isStreak) {
+            prediction = arr[0]; reason = "Flow: Riding Current Trend";
         } else {
-            // Volume trap: Look at last 5. If 4 are BIG, humans bet SMALL (mean reversion). So we bet BIG.
-            let countA = 0; let valA = arr[0];
-            for (let i=0; i<5; i++) { if(arr[i] === valA) countA++; }
-            
-            if (countA >= 4) {
-                prediction = valA;
-                reason = "Anti-Crowd: Fading Human Mean Reversion";
-            } else {
-                return { type: typeLabel, action: "WAIT", conf: 0, reason: "Market Balanced: Waiting for Crowd Imbalance" };
-            }
+            prediction = arr[0]; reason = "Flow: Momentum Follow";
         }
     }
 
-    let confidence = getConf(96, 99); 
+    let confidence = getConf(92, 98);
     return { type: typeLabel, action: prediction, conf: confidence, reason: reason };
 }
 
 function getBestSignal(list, currentLevel) { 
-    if(!list || list.length < 10) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
+    if(!list || list.length < 5) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
     
     const sizes = list.map(i => getSize(Number(i.number))); 
     const colors = list.map(i => getColor(Number(i.number))); 
     const rawNums = list.map(i => Number(i.number));
     
-    let sizeSignal = analyzeV27(sizes, rawNums, "SIZE", currentLevel);
-    let colorSignal = analyzeV27(colors, rawNums, "COLOR", currentLevel);
+    let sizeSignal = analyzeV29(sizes, rawNums, "SIZE", currentLevel);
+    let colorSignal = analyzeV29(colors, rawNums, "COLOR", currentLevel);
 
     if (sizeSignal.action === "WAIT" && colorSignal.action === "WAIT") {
         return { type: "NONE", action: "WAIT", conf: 0, reason: sizeSignal.reason };
@@ -202,7 +173,7 @@ async function tick() {
             if (timeElapsed > 4 * 60 * 1000) { 
                 let msg = `⚠️ <b>𝐀𝐏𝐈 𝐋𝐀𝐆 𝐃𝐄𝐓𝐄𝐂𝐓𝐄𝐃</b> ⚠️\n`;
                 msg += `━━━━━━━━━━━━━━━━━━\n`;
-                msg += `🔄 <b>Trade Cancelled. Waiting for Casino to settle liability.</b>`;
+                msg += `🔄 <b>Trade Cancelled. Funds Safe.</b>`;
                 await sendTelegram(msg);
                 state.activePrediction = null;
                 saveState();
@@ -220,13 +191,19 @@ async function tick() {
                         state.wins++; 
                         state.totalSignals++; 
                         state.currentLevel = 0; 
-                        state.consecutiveWaits = 0;
                     } else { 
                         state.currentLevel++; 
-                        state.consecutiveWaits = 0;
+                        
+                        // 🚨 THE STOP-LOSS TRIGGER
                         if(state.currentLevel >= FUND_LEVELS.length) {
                             state.totalSignals++; 
                             state.currentLevel = 0; 
+                            
+                            let stopMsg = `🛑 <b>𝐒𝐓𝐎𝐏-𝐋𝐎𝐒𝐒 𝐓𝐑𝐈𝐆𝐆𝐄𝐑𝐄𝐃</b> 🛑\n`;
+                            stopMsg += `━━━━━━━━━━━━━━━━━━\n`;
+                            stopMsg += `⚠️ <i>Casino manipulation detected. KIRA has automatically halted the sequence at Level 5 to protect your core bankroll from a total wipeout.</i>\n`;
+                            stopMsg += `🔄 <b>Accepting tactical loss. Resetting to Level 1.</b>`;
+                            await sendTelegram(stopMsg);
                         }
                     } 
                     
@@ -245,7 +222,7 @@ async function tick() {
                     }
                     
                     resMsg += `🎯 𝐒𝐞𝐪𝐮𝐞𝐧𝐜𝐞 𝐒𝐮𝐜𝐜𝐞𝐬𝐬: <b>${currentAccuracy}%</b>\n`; 
-                    if (!isWin) resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.currentLevel + 1}</b>\n`; 
+                    if (!isWin && state.currentLevel !== 0) resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.currentLevel + 1}</b>\n`; 
                     
                     await sendTelegram(resMsg); 
                 } 
@@ -260,9 +237,7 @@ async function tick() {
                 if (state.consecutiveWaits >= MAX_WAIT_STREAK && state.currentLevel > 0) {
                     let msg = `⚡️ <b>𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑 𝐓𝐑𝐈𝐏𝐏𝐄𝐃</b> ⚡️\n`;
                     msg += `━━━━━━━━━━━━━━━━━━\n`;
-                    msg += `⚠️ Extreme liability trap detected.\n`;
                     msg += `🔄 <b>Resetting sequence to Level 1 to protect capital.</b>\n`;
-                    
                     await sendTelegram(msg);
                     state.totalSignals++; 
                     state.currentLevel = 0; 
@@ -279,8 +254,7 @@ async function tick() {
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n`; 
-                    msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`;
-                    if (state.currentLevel > 0) msg += `⏱ <i>(${state.consecutiveWaits}/${MAX_WAIT_STREAK})</i>`;
+                    msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>`;
                     await sendTelegram(msg); 
                     saveState();
                 } else if(signal) { 
@@ -296,7 +270,7 @@ async function tick() {
                     let bar = "🟩🟩🟩🟩🟩";
                     if (signal.conf < 95) bar = "🟩🟩🟩🟩⬜";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟕 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟗 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
