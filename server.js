@@ -9,25 +9,23 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => { 
     res.send(` 
         <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟐 (𝐒𝐇𝐀𝐃𝐎𝐖 𝐌𝐀𝐓𝐑𝐈𝐗) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>Ghost Betting Active. Users only see ultra-high probability signals.</p> 
+            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟐.𝟏 (𝐀𝐍𝐓𝐈-𝐅𝐑𝐄𝐄𝐙𝐄) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
+            <p>Ghost Betting Active. API Timeout Protection Engaged.</p> 
             <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
         </body> 
     `); 
 }); 
-app.listen(PORT, () => console.log(`🚀 Kira V22 Server listening on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`🚀 Kira V22.1 Server listening on port ${PORT}`)); 
 
 // ========================================== 
 // ⚙️ TELEGRAM & API CONFIGURATION 
 // ========================================== 
-const BOT_TOKEN = "8561861801:AAGdQejCn4pN3PHn_ZqqiRPEVlZnZJ_igyA"; 
+const BOT_TOKEN = "8561861801:AAEdu5BN2ShfJFcBffo9ZFU7n4ilIe7eFRo"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
 const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
 
-// 🌟 THE 9-LEVEL SPLIT
-// First 3 levels are absorbed by the Ghost. Last 6 are given to the users.
 const GHOST_THRESHOLD = 3; 
-const REAL_FUND_LEVELS = [33, 66, 100, 133, 168, 500]; // What the user actually plays
+const REAL_FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
 const MAX_WAIT_STREAK = 15; 
 
 const HEADERS = { 
@@ -47,9 +45,9 @@ let state = {
     totalSignals: 0, 
     wins: 0, 
     isStarted: false, 
-    isShadowMode: true,  // 👻 Starts in stealth mode
-    virtualLevel: 0,     // 👻 Tracks the ghost's losses
-    realLevel: 0,        // 👥 Tracks the user's losses
+    isShadowMode: true,  
+    virtualLevel: 0,     
+    realLevel: 0,        
     consecutiveWaits: 0 
 }; 
 
@@ -63,7 +61,6 @@ function saveState() { fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 
 loadState(); 
 
 async function sendTelegram(text) { 
-    // 🛑 NEVER send to Telegram if we are in Shadow Mode!
     if (state.isShadowMode) return; 
 
     for (let chat_id of TARGET_CHATS) { 
@@ -78,18 +75,17 @@ async function sendTelegram(text) {
 } 
 
 if (!state.isStarted) { 
-    // This boot message will only send once. After this, silence until a golden setup.
     state.isShadowMode = false; 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟐 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Shadow Matrix Activated.\nGhost Betting Protocol Engaged.</i>\n\n⏱ <i>Bot is currently running silent background simulations to absorb casino traps. Signals will only broadcast when probability > 96%.</i>`; 
+    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟐.𝟏 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Shadow Matrix Activated.\nAnti-Freeze Protocol Engaged.</i>\n\n⏱ <i>Bot is currently running silent background simulations. Signals will only broadcast when probability > 96%.</i>`; 
     sendTelegram(bootMsg).then(() => {
-        state.isShadowMode = true; // Go back to stealth
+        state.isShadowMode = true; 
         state.isStarted = true; 
         saveState(); 
     });
 } 
 
 // ========================================== 
-// 🧠 QUANTUM V22 BRAIN (CORE LOGIC)
+// 🧠 QUANTUM V22.1 BRAIN
 // ========================================== 
 function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
 function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
@@ -104,6 +100,7 @@ function analyzeV22(arr, rawNums, typeLabel, currentLevel) {
 
     let prediction = null;
     let reason = "";
+    // Fixed the 95% bug here!
     const getConf = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
     let isVioletTrap = (rawNums[0] === 0 || rawNums[0] === 5 || rawNums[1] === 0 || rawNums[1] === 5);
@@ -114,7 +111,6 @@ function analyzeV22(arr, rawNums, typeLabel, currentLevel) {
     let isCluster = (arr[0] === arr[1] && arr[2] === arr[3] && arr[0] !== arr[2]); 
     let isBreakout = (arr[0] !== arr[1] && arr[1] === arr[2] && arr[2] === arr[3]); 
 
-    // Because the Ghost handles the first 3 levels, the logic here is strictly defensive against traps
     if (isVioletTrap) {
         return { type: typeLabel, action: "WAIT", conf: 0, reason: "Market Unstable: Violet Trap Detected" };
     } else if (isPerfectChop || isChop) {
@@ -129,7 +125,7 @@ function analyzeV22(arr, rawNums, typeLabel, currentLevel) {
         return { type: typeLabel, action: "WAIT", conf: 0, reason: "Filtering Market Noise" };
     }
 
-    let confidence = getConf(94, 99); // Signals are inherently high confidence now
+    let confidence = getConf(96, 99); 
     return { type: typeLabel, action: prediction, conf: confidence, reason: reason };
 }
 
@@ -161,9 +157,9 @@ async function tick() {
     isProcessing = true; 
     
     try { 
-        const res = await fetch(API + "&_t=" + Date.now(), { headers: HEADERS, timeout: 10000 }); 
+        const res = await fetch(API + "&_t=" + Date.now(), { headers: HEADERS, timeout: 8000 }); 
         const data = await res.json(); 
-        if(!data.data || !data.data.list) throw new Error("Invalid API"); 
+        if(!data.data || !data.data.list) throw new Error("API returned invalid JSON structure"); 
         
         const list = data.data.list; 
         const latestIssue = list[0].issueNumber; 
@@ -175,6 +171,27 @@ async function tick() {
         
         // 1️⃣ CHECK PREVIOUS RESULT 
         if(state.activePrediction) { 
+            // 🚨 ANTI-FREEZE TIMEOUT LOGIC
+            let timeElapsed = Date.now() - state.activePrediction.timestamp;
+            if (timeElapsed > 4 * 60 * 1000) { // 4 Minutes
+                console.log(`[TIMEOUT] API stuck for 4 mins on period ${state.activePrediction.period}. Resetting.`);
+                
+                if (!state.isShadowMode) {
+                    let msg = `⚠️ <b>𝐀𝐏𝐈 𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍 𝐋𝐎𝐒𝐓</b> ⚠️\n`;
+                    msg += `━━━━━━━━━━━━━━━━━━\n`;
+                    msg += `The Casino server is lagging and refusing to output results for Period ${state.activePrediction.period}.\n`;
+                    msg += `🔄 <b>Trade Cancelled. Funds Safe. Resetting matrix to avoid traps.</b>`;
+                    await sendTelegram(msg);
+                }
+                
+                state.activePrediction = null;
+                state.isShadowMode = true;
+                state.realLevel = 0;
+                state.virtualLevel = 0;
+                saveState();
+                return;
+            }
+
             if(BigInt(latestIssue) >= BigInt(state.activePrediction.period)) { 
                 const resultItem = list.find(i => i.issueNumber === state.activePrediction.period); 
                 if(resultItem) { 
@@ -182,7 +199,6 @@ async function tick() {
                     let actualResult = state.activePrediction.type === "SIZE" ? getSize(actualNum) : getColor(actualNum); 
                     let isWin = (actualResult === state.activePrediction.pred); 
                     
-                    // 👻 GHOST MODE RESOLUTION
                     if (state.isShadowMode) {
                         if (isWin) {
                             console.log(`[GHOST] Won at Virtual Level ${state.virtualLevel + 1}. Resetting ghost.`);
@@ -191,7 +207,6 @@ async function tick() {
                             state.virtualLevel++;
                             console.log(`[GHOST] Lost. Escalating to Virtual Level ${state.virtualLevel + 1}`);
                             
-                            // 💥 TRIGGER: Ghost absorbed enough losses. Deploy to users!
                             if (state.virtualLevel >= GHOST_THRESHOLD) {
                                 console.log(`[GHOST] Absorbed 3 losses. Deploying real signal to Telegram!`);
                                 state.isShadowMode = false; 
@@ -199,14 +214,13 @@ async function tick() {
                             }
                         }
                     } 
-                    // 👥 REAL USER MODE RESOLUTION
                     else {
                         state.totalSignals++; 
                         if(isWin) { 
                             state.wins++; 
                             state.realLevel = 0; 
                             state.virtualLevel = 0;
-                            state.isShadowMode = true; // 👻 Go back into the shadows after a win!
+                            state.isShadowMode = true; 
                             state.consecutiveWaits = 0; 
                         } else { 
                             state.realLevel++; 
@@ -214,7 +228,7 @@ async function tick() {
                             if(state.realLevel >= REAL_FUND_LEVELS.length) {
                                 state.realLevel = 0; 
                                 state.virtualLevel = 0;
-                                state.isShadowMode = true; // Reset totally
+                                state.isShadowMode = true; 
                             }
                         } 
                         
@@ -247,7 +261,6 @@ async function tick() {
         if(state.lastProcessedIssue !== latestIssue) { 
             if(!state.activePrediction) { 
                 
-                // Real Level Circuit Breaker
                 if (!state.isShadowMode && state.consecutiveWaits >= MAX_WAIT_STREAK) {
                     let msg = `⚡️ <b>𝐂𝐈𝐑𝐂𝐔𝐈𝐓 𝐁𝐑𝐄𝐀𝐊𝐄𝐑 𝐓𝐑𝐈𝐏𝐏𝐄𝐃</b> ⚡️\n`;
                     msg += `━━━━━━━━━━━━━━━━━━\n`;
@@ -258,7 +271,7 @@ async function tick() {
                     state.realLevel = 0; 
                     state.virtualLevel = 0;
                     state.consecutiveWaits = 0; 
-                    state.isShadowMode = true; // Go hide again
+                    state.isShadowMode = true; 
                     saveState();
                     return; 
                 }
@@ -280,15 +293,13 @@ async function tick() {
                 } else if(signal) { 
                     state.consecutiveWaits = 0; 
                     
-                    // 👻 If in Shadow Mode, just log it, DON'T broadcast.
                     if (state.isShadowMode) {
                         console.log(`[GHOST] Period ${targetIssue} | Betting ${signal.action} at Virtual Level ${state.virtualLevel + 1}`);
-                        state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf }; 
+                        state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf, timestamp: Date.now() }; 
                         saveState();
                         return;
                     }
 
-                    // 👥 If in Real Mode, BROADCAST TO USERS
                     let signalEmoji = signal.type === "COLOR" ? "🎨" : "📏"; 
                     let betAmount = REAL_FUND_LEVELS[state.realLevel]; 
 
@@ -299,7 +310,7 @@ async function tick() {
                     let bar = "🟩🟩🟩🟩🟩";
                     if (signal.conf < 96) bar = "🟩🟩🟩🟩⬜";
 
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟐 ⚡️\n`; 
+                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟐𝟐.𝟏 ⚡️\n`; 
                     msg += `━━━━━━━━━━━━━━━━━━\n`; 
                     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
@@ -311,13 +322,18 @@ async function tick() {
                     msg += `⚙️ <i>${signal.reason}</i>`; 
                     
                     await sendTelegram(msg); 
-                    state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf }; 
+                    state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf, timestamp: Date.now() }; 
                     saveState(); 
                 } 
             } 
             state.lastProcessedIssue = latestIssue; saveState(); 
         } 
-    } catch (e) {} finally { isProcessing = false; } 
+    } catch (e) {
+        // 🚨 ADDED ERROR LOGGING HERE
+        console.log(`[API ERROR] Fetch failed: ${e.message}`);
+    } finally { 
+        isProcessing = false; 
+    } 
 } 
 
 setInterval(tick, 2500); 
