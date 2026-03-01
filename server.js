@@ -1,43 +1,44 @@
-const express = require('express'); 
-const fs = require('fs'); 
-const app = express(); 
-const PORT = process.env.PORT || 3000; 
+const express = require('express');
+const fs = require('fs');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 // ==========================================
 // 🌐 WEB MONITOR 
 // ==========================================
-app.get('/', (req, res) => { 
-    res.send(` 
-        <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;"> 
-            <h2>🟢 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟑𝟎 (𝐓𝐇𝐄 𝐌𝐈𝐑𝐑𝐎𝐑) 𝐎𝐍𝐋𝐈𝐍𝐄</h2> 
-            <p>Adaptive Copycat Logic Active. Never fighting streaks again.</p> 
-            <p style="color:#aaa; font-size:12px;">Monitoring: WinGo 1-Minute API</p> 
-        </body> 
-    `); 
-}); 
-app.listen(PORT, () => console.log(`🚀 Kira V30 Server listening on port ${PORT}`)); 
+app.get('/', (req, res) => {
+    res.send(`
+        <body style="background:#050510; color:#00ff9d; font-family:monospace; text-align:center; padding:50px;">
+            <h2>🏛️ 𝐉𝐀𝐑𝐕𝐈𝐒 🤖 𝐈𝐍𝐒𝐓𝐈𝐓𝐔𝐓𝐈𝐎𝐍𝐀𝐋 𝐐𝐔𝐀𝐍𝐓 (𝐕𝟔.𝟎) 🏛️</h2>
+            <p>Advanced PDF Trend Engine. Market Health Monitor Active.</p>
+        </body>
+    `);
+});
+app.listen(PORT, () => console.log(`🚀 JᴀʀᴠᎥຮ V6.0 Quant Algo listening on port ${PORT}`));
 
-// ========================================== 
-// ⚙️ TELEGRAM & API CONFIGURATION 
-// ========================================== 
-const BOT_TOKEN = "8561861801:AAH1Qs68bWIIm5K6GaXwfrcej5nc84_Eb7M"; 
-const TARGET_CHATS = ["1669843747", "-1002613316641"]; 
-const API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30"; 
+// ==========================================
+// ⚙️ CONFIGURATION
+// ==========================================
+const TELEGRAM_BOT_TOKEN = "8561861801:AAGEH-g5jr0BSDQ4XTiymmwEX9MmEFUF4d0"; 
+const TARGET_CHATS = ["1669843747", "-1002613316641"];
 
-// 6 Levels for maximum mathematical coverage of the Mirror strategy
-const FUND_LEVELS = [33, 66, 100, 133, 168, 500]; 
+const WINGO_API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30";
+const FUND_LEVELS = [33, 66, 130, 260, 550, 1100]; 
 
 const HEADERS = { 
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 
+    "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36", 
     "Accept": "application/json, text/plain, */*", 
     "Origin": "https://www.dmwin2.com", 
-    "Referer": "https://www.dmwin2.com/" 
+    "Referer": "https://www.dmwin2.com/",
+    "Accept-Language": "en-US,en;q=0.9,hi;q=0.8",
+    "Connection": "keep-alive"
 }; 
 
-// ========================================== 
-// 🧠 MEMORY & STATE 
-// ========================================== 
-const STATE_FILE = './kira_state.json'; 
+// ==========================================
+// 🧠 MEMORY & STATE
+// ==========================================
+const STATE_FILE = './jarvis_state.json'; 
 let state = { 
     lastProcessedIssue: null, 
     activePrediction: null, 
@@ -45,7 +46,7 @@ let state = {
     wins: 0, 
     isStarted: false, 
     currentLevel: 0,
-    violetPause: 0 // Tracks how many periods to pause after a trap
+    waitCount: 0 
 }; 
 
 function loadState() { 
@@ -60,7 +61,7 @@ loadState();
 async function sendTelegram(text) { 
     for (let chat_id of TARGET_CHATS) { 
         try { 
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { 
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify({ chat_id: chat_id, text: text, parse_mode: 'HTML' }) 
@@ -72,96 +73,101 @@ async function sendTelegram(text) {
 if (!state.isStarted) { 
     state.isStarted = true; 
     saveState(); 
-    let bootMsg = `🟢 <b>𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟑𝟎 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🟢\n━━━━━━━━━━━━━━━━━━\n📡 <i>Mirror Algorithm Activated.\nAdaptive Trend Logic Online.</i>\n\n⏱ <i>Bot will now seamlessly transition between riding streaks and riding chops. Fighting the Casino is disabled.</i>`; 
+    let bootMsg = `🏛️ <b>𝐉𝐀𝐑𝐕𝐈𝐒 𝐕𝟔.𝟎 𝐈𝐍𝐒𝐓𝐈𝐓𝐔𝐓𝐈𝐎𝐍𝐀𝐋 𝐎𝐍𝐋𝐈𝐍𝐄</b> 🏛️\n⟡ ════════ ⋆★⋆ ════════ ⟡\n\n🛡️ <i>Market Health Monitor Active.</i>\n📏 <i>Size-Only Quantitative Logic Loaded.</i>\n📈 <i>11/11 Master Trends Calibrated.</i>\n\n⟡ ════════ ⋆★⋆ ════════ ⟡`; 
     sendTelegram(bootMsg); 
 } 
 
-// ========================================== 
-// 🧠 QUANTUM V30 BRAIN (THE MIRROR)
-// ========================================== 
-function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
-function getColor(n) { return [0,2,4,6,8].includes(n) ? "RED" : "GREEN"; } 
-
-function analyzeV30(arr, rawNums, typeLabel, currentLevel) {
-    if (arr.length < 5) return { action: "WAIT", conf: 0, reason: "GATHERING DATA" };
-
-    const OPPOSITE = (val) => {
-        if (typeLabel === "SIZE") return val === "BIG" ? "SMALL" : "BIG";
-        return val === "RED" ? "GREEN" : "RED";
-    };
-
-    let prediction = null;
-    let reason = "";
-    const getConf = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-    // 🎯 THE ADAPTIVE MIRROR LOGIC
-    // If we are at Level 1 or 2, we assume a streak is happening and COPY the last result.
-    if (currentLevel < 2) {
-        prediction = arr[0]; 
-        reason = "Mirror Logic: Riding Current Momentum";
-    } 
-    // If we lost twice, a streak is NOT happening. We are in a chop. We bet the OPPOSITE of the last result.
-    else {
-        prediction = OPPOSITE(arr[0]);
-        reason = "Adaptive Switch: Catching the Alternation Chop";
-    }
-
-    let confidence = getConf(96, 99);
-    return { type: typeLabel, action: prediction, conf: confidence, reason: reason };
+// ==========================================
+// 📊 MARKET HEALTH MONITOR
+// ==========================================
+function getMarketHealth() {
+    if (state.currentLevel === 0 || state.currentLevel === 1) return "🟢 STABLE";
+    if (state.currentLevel === 2 || state.currentLevel === 3) return "🟡 VOLATILE";
+    return "🔴 DANGEROUS";
 }
 
-function getBestSignal(list, currentLevel) { 
-    if(!list || list.length < 5) return { type: "NONE", action: "WAIT", conf: 0, reason: "GATHERING DATA" }; 
-    
-    const sizes = list.map(i => getSize(Number(i.number))); 
-    const colors = list.map(i => getColor(Number(i.number))); 
-    const rawNums = list.map(i => Number(i.number));
-    
-    let sizeSignal = analyzeV30(sizes, rawNums, "SIZE", currentLevel);
-    let colorSignal = analyzeV30(colors, rawNums, "COLOR", currentLevel);
+// ==========================================
+// 📈 SMART 11-PATTERN ALGORITHM (V6.0 DEEP SCAN)
+// ==========================================
+function analyzeTrends(list) {
+    let sizesArray = list.slice(0, 15).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+    let history = sizesArray.reverse().join(''); 
 
-    // Default to prioritizing SIZE to avoid Color ties/0/5 issues as much as possible
-    return sizeSignal; 
-} 
+    // Length 9 Patterns
+    if (history.endsWith('SSSSBBSSS')) return { action: 'SMALL', reason: '10. Four in Two Trend' };
+    if (history.endsWith('BBBBSSBBB')) return { action: 'BIG', reason: '10. Four in Two Trend' };
+
+    // Length 8 Patterns
+    if (history.endsWith('BBBBSBBB')) return { action: 'BIG', reason: '9. Four in One Trend' };
+    if (history.endsWith('SSSSBSSS')) return { action: 'SMALL', reason: '9. Four in One Trend' };
+
+    // Length 7 Patterns
+    if (history.endsWith('SSSBBSS')) return { action: 'SMALL', reason: '8. Three in Two Trend' };
+    if (history.endsWith('BBBSSBB')) return { action: 'BIG', reason: '8. Three in Two Trend' };
+    if (history.endsWith('BBBBSSS')) return { action: 'SMALL', reason: '5. Quadra Trend' };
+    if (history.endsWith('SSSSBBB')) return { action: 'BIG', reason: '5. Quadra Trend' };
+
+    // Length 6 Patterns
+    if (history.endsWith('SSSBSS')) return { action: 'SMALL', reason: '6. Three in One Trend' };
+    if (history.endsWith('BBBSBB')) return { action: 'BIG', reason: '6. Three in One Trend' };
+    if (history.endsWith('BBSSBB')) return { action: 'SMALL', reason: '2. Double Trend (Extended)' };
+    if (history.endsWith('SSBBSS')) return { action: 'BIG', reason: '2. Double Trend (Extended)' };
+
+    // Length 5 Patterns
+    if (history.endsWith('BBSBB')) return { action: 'SMALL', reason: '7. Two in One Trend' };
+    if (history.endsWith('SSBSS')) return { action: 'BIG', reason: '7. Two in One Trend' };
+    if (history.endsWith('SSSBB')) return { action: 'BIG', reason: '3. Triple Trend' };
+    if (history.endsWith('BBBSS')) return { action: 'SMALL', reason: '3. Triple Trend' };
+    if (history.endsWith('BBBBB')) return { action: 'BIG', reason: '11. Long Trend (Dragon)' };
+    if (history.endsWith('SSSSS')) return { action: 'SMALL', reason: '11. Long Trend (Dragon)' };
+
+    // Length 4 Patterns
+    if (history.endsWith('BSBS')) return { action: 'BIG', reason: '1. Single Trend (Alternating)' };
+    if (history.endsWith('SBSB')) return { action: 'SMALL', reason: '1. Single Trend (Alternating)' };
+    if (history.endsWith('BBSS')) return { action: 'BIG', reason: '2. Double Trend' };
+    if (history.endsWith('SSBB')) return { action: 'SMALL', reason: '2. Double Trend' };
+
+    // SMART SKIP
+    return { action: "WAIT", reason: "Market structure chaotic. Waiting for clear PDF pattern." };
+}
 
 // ========================================== 
 // ⚙️ SERVER MAIN LOOP 
 // ========================================== 
 let isProcessing = false; 
 
+function getSize(n) { return n <= 4 ? "SMALL" : "BIG"; } 
+
 async function tick() { 
     if(isProcessing) return; 
     isProcessing = true; 
     
     try { 
-        const res = await fetch(API + "&_t=" + Date.now(), { headers: HEADERS, timeout: 8000 }); 
-        const data = await res.json(); 
-        if(!data.data || !data.data.list) throw new Error("API Issue"); 
+        const res = await fetch(WINGO_API + "&_t=" + Date.now(), { headers: HEADERS, timeout: 8000 }); 
+        const rawText = await res.text();
+        let data;
+        
+        try {
+            data = JSON.parse(rawText);
+        } catch (parseError) {
+            console.log(`\n[FIREWALL BLOCKED] The casino returned a security page instead of JSON.`);
+            throw new Error("Casino Firewall Blocked Connection.");
+        }
+
+        if(!data.data || !data.data.list) throw new Error("Empty API List"); 
         
         const list = data.data.list; 
         const latestIssue = list[0].issueNumber; 
         const targetIssue = (BigInt(latestIssue) + 1n).toString(); 
         
-        // 🛡️ VIOLET TRAP HANDLING
-        let currentNum = Number(list[0].number);
-        if (currentNum === 0 || currentNum === 5) {
-            state.violetPause = 2; // Pause for 2 periods when a trap hits
-        }
-
         if(state.activePrediction && BigInt(latestIssue) >= BigInt(state.activePrediction.period) + 2n) { 
             state.activePrediction = null; saveState(); 
         } 
         
-        // 1️⃣ CHECK PREVIOUS RESULT 
         if(state.activePrediction) { 
             let timeElapsed = Date.now() - state.activePrediction.timestamp;
             if (timeElapsed > 4 * 60 * 1000) { 
-                let msg = `⚠️ <b>𝐀𝐏𝐈 𝐋𝐀𝐆 𝐃𝐄𝐓𝐄𝐂𝐓𝐄𝐃</b> ⚠️\n`;
-                msg += `━━━━━━━━━━━━━━━━━━\n`;
-                msg += `🔄 <b>Trade Cancelled. Funds Safe.</b>`;
-                await sendTelegram(msg);
-                state.activePrediction = null;
-                saveState();
+                state.activePrediction = null; saveState();
                 return;
             }
 
@@ -169,7 +175,7 @@ async function tick() {
                 const resultItem = list.find(i => i.issueNumber === state.activePrediction.period); 
                 if(resultItem) { 
                     let actualNum = Number(resultItem.number); 
-                    let actualResult = state.activePrediction.type === "SIZE" ? getSize(actualNum) : getColor(actualNum); 
+                    let actualResult = getSize(actualNum); 
                     let isWin = (actualResult === state.activePrediction.pred); 
                     
                     if(isWin) { 
@@ -178,35 +184,28 @@ async function tick() {
                         state.currentLevel = 0; 
                     } else { 
                         state.currentLevel++; 
-                        
                         if(state.currentLevel >= FUND_LEVELS.length) {
                             state.totalSignals++; 
                             state.currentLevel = 0; 
-                            
-                            let stopMsg = `🛑 <b>𝐌𝐀𝐗 𝐋𝐄𝐕𝐄𝐋 𝐑𝐄𝐀𝐂𝐇𝐄𝐃</b> 🛑\n`;
-                            stopMsg += `━━━━━━━━━━━━━━━━━━\n`;
-                            stopMsg += `⚠️ Extreme market anomaly detected.\n`;
-                            stopMsg += `🔄 Resetting to Level 1.`;
-                            await sendTelegram(stopMsg);
+                            await sendTelegram(`🛑 <b>𝐌𝐀𝐗 𝐋𝐄𝐕𝐄𝐋 𝐑𝐄𝐀𝐂𝐇𝐄𝐃</b> 🛑\n⚠️ Algorithm detected massive anomaly. Resetting.`);
                         }
                     } 
                     
                     let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
+                    let marketHealth = getMarketHealth();
                     
-                    let resMsg = isWin ? `✅ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐄𝐋𝐈𝐌𝐈𝐍𝐀𝐓𝐄𝐃</b> ✅\n` : `❌ <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> ❌\n`; 
-                    resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
-                    resMsg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝  : <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
-                    resMsg += `🎲 𝐑𝐞𝐬𝐮𝐥𝐭  : <b>${actualNum} (${actualResult})</b>\n`; 
-                    resMsg += `━━━━━━━━━━━━━━━━━━\n`; 
+                    // 🏛️ V6.0 TERMINAL UI UPDATE
+                    let resMsg = isWin ? `✅ <b>𝐏𝐑𝐎𝐅𝐈𝐓 𝐒𝐄𝐂𝐔𝐑𝐄𝐃</b> ✅\n` : `🛑 <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> 🛑\n`; 
+                    resMsg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    resMsg += `🎯 <b>𝐏𝐞𝐫𝐢𝐨𝐝 :</b> <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
+                    resMsg += `🎲 <b>𝐑𝐞𝐬𝐮𝐥𝐭 :</b> ${actualNum} (${actualResult})\n`; 
+                    resMsg += `📈 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐥𝐭𝐡 :</b> ${marketHealth}\n`;
                     
-                    if(isWin) {
-                        resMsg += `💰 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>PROFIT SECURED!</b>\n`; 
-                    } else {
-                        resMsg += `🛡️ 𝐒𝐭𝐚𝐭𝐮𝐬   : <b>ESCALATING (L${state.currentLevel + 1})</b>\n`; 
+                    if(!isWin) {
+                        resMsg += `🛡️ <b>𝐒𝐭𝐚𝐭𝐮𝐬 :</b> 𝐄𝐒𝐂𝐀𝐋𝐀𝐓𝐈𝐍𝐆 (𝐋𝐞𝐯𝐞𝐥 ${state.currentLevel + 1})\n`; 
                     }
-                    
-                    resMsg += `🎯 𝐒𝐞𝐪𝐮𝐞𝐧𝐜𝐞 𝐒𝐮𝐜𝐜𝐞𝐬𝐬: <b>${currentAccuracy}%</b>\n`; 
-                    if (!isWin && state.currentLevel !== 0) resMsg += `🔄 𝐍𝐞𝐱𝐭 𝐓𝐫𝐚𝐝𝐞: <b>Level ${state.currentLevel + 1}</b>\n`; 
+                    resMsg += `🏆 <b>𝐖𝐢𝐧 𝐑𝐚𝐭𝐞 :</b> ${currentAccuracy}%\n`;
+                    resMsg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
                     
                     await sendTelegram(resMsg); 
                 } 
@@ -214,53 +213,45 @@ async function tick() {
             } 
         } 
         
-        // 2️⃣ GENERATE NEW PREDICTION 
         if(state.lastProcessedIssue !== latestIssue) { 
             if(!state.activePrediction) { 
 
-                // Violet Pause Execution
-                if (state.violetPause > 0) {
-                    let msg = `📡 <b>𝐊𝐈𝐑𝐀 𝐑𝐀𝐃𝐀𝐑 𝐒𝐂𝐀𝐍</b> 📡\n`; 
-                    msg += `━━━━━━━━━━━━━━━━━━\n`; 
-                    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
-                    msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> WAIT\n`; 
-                    msg += `📉 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>Casino Trap Detected. Pausing to clear board. (${state.violetPause} left)</i>`;
-                    await sendTelegram(msg); 
-                    
-                    state.violetPause--;
-                    state.lastProcessedIssue = latestIssue; 
-                    saveState();
-                    return;
-                }
-
-                const signal = getBestSignal(list, state.currentLevel); 
+                const signal = analyzeTrends(list);
+                let marketHealth = getMarketHealth();
+                
+                console.log(`\n[${new Date().toLocaleTimeString()}] 🎯 Period ${targetIssue.slice(-4)} | ALGO DECISION:`, signal);
                 
                 if(signal && signal.action === "WAIT") { 
-                    // Failsafe
-                } else if(signal) { 
-                    let signalEmoji = signal.type === "COLOR" ? "🎨" : "📏"; 
+                    state.waitCount++;
+                    if (state.waitCount === 1 || state.waitCount % 15 === 0) {
+                        // 🏛️ V6.0 TERMINAL UI UPDATE
+                        let msg = `📡 <b>𝐉𝐀𝐑𝐕𝐈𝐒 𝐌𝐀𝐑𝐊𝐄𝐓 𝐒𝐂𝐀𝐍</b> 📡\n`; 
+                        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`; 
+                        msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
+                        msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> SKIP & WAIT\n`; 
+                        msg += `🛡️ <b>𝐀𝐥𝐠𝐨 𝐋𝐨𝐠𝐢𝐜:</b> <i>${signal.reason}</i>\n`;
+                        msg += `🔇 <i>(Silencing further scans to prevent spam)</i>`;
+                        await sendTelegram(msg); 
+                    }
+                    saveState();
+                } else if(signal && signal.action !== "WAIT") { 
+                    state.waitCount = 0; 
                     let betAmount = FUND_LEVELS[state.currentLevel]; 
-
-                    let threatLevel = "🟢 𝐒𝐓𝐀𝐍𝐃𝐀𝐑𝐃 𝐄𝐍𝐓𝐑𝐘";
-                    if (state.currentLevel >= 2) threatLevel = "🟡 𝐀𝐃𝐀𝐏𝐓𝐈𝐕𝐄 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘";
-                    if (state.currentLevel >= 4) threatLevel = "🔴 𝐃𝐄𝐄𝐏 𝐑𝐄𝐂𝐎𝐕𝐄𝐑𝐘";
-
-                    let bar = "🟩🟩🟩🟩🟩";
-                    if (signal.conf < 98) bar = "🟩🟩🟩🟩⬜";
                     
-                    let msg = `⚡️ 𝐊𝐈𝐑𝐀 𝐐𝐔𝐀𝐍𝐓𝐔𝐌 𝐕𝟑𝟎 ⚡️\n`; 
-                    msg += `━━━━━━━━━━━━━━━━━━\n`; 
-                    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`; 
-                    msg += `${signalEmoji} <b>𝐒𝐢𝐠𝐧𝐚𝐥 𝐓𝐲𝐩𝐞:</b> ${signal.type}\n`; 
-                    msg += `🔮 <b>𝐏𝐫𝐞𝐝𝐢𝐜𝐭𝐢𝐨𝐧: ${signal.action}</b>\n`; 
-                    msg += `📊 𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞: ${bar} <b>${signal.conf}%</b>\n`; 
-                    msg += `━━━━━━━━━━━━━━━━━━\n`; 
-                    msg += `⚠️ <b>${threatLevel}</b>\n`; 
-                    msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 (𝐋${state.currentLevel + 1}): Rs. ${betAmount}</b>\n`; 
-                    msg += `🧠 <i>${signal.reason}</i>`; 
+                    // 🏛️ V6.0 TERMINAL UI UPDATE
+                    let msg = `🏛️ <b>𝐉𝐀𝐑𝐕𝐈𝐒 𝐈𝐍𝐒𝐓𝐈𝐓𝐔𝐓𝐈𝐎𝐍𝐀𝐋 : 𝐄𝐗𝐄𝐂𝐔𝐓𝐄</b> 🏛️\n`; 
+                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    msg += `🎯 <b>𝐓𝐚𝐫𝐠𝐞𝐭 𝐏𝐞𝐫𝐢𝐨𝐝 :</b> <code>${targetIssue.slice(-4)}</code>\n`; 
+                    msg += `📈 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐥𝐭𝐡 :</b> ${marketHealth}\n`;
+                    msg += `📊 <b>𝐌𝐞𝐭𝐫𝐢𝐜 :</b> 📏 SIZE ONLY\n`; 
+                    msg += `🔮 <b>𝐐𝐮𝐚𝐧𝐭 𝐒𝐢𝐠𝐧𝐚𝐥 : ${signal.action}</b>\n`; 
+                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    msg += `💎 <b>𝐄𝐧𝐭𝐫𝐲 𝐋𝐞𝐯𝐞𝐥 :</b> Level ${state.currentLevel + 1}\n`; 
+                    msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 :</b> Rs. ${betAmount}\n`; 
+                    msg += `🧠 <b>𝐂𝐡𝐚𝐫𝐭 𝐋𝐨𝐠𝐢𝐜 :</b> <i>${signal.reason}</i>`; 
                     
                     await sendTelegram(msg); 
-                    state.activePrediction = { period: targetIssue, pred: signal.action, type: signal.type, conf: signal.conf, timestamp: Date.now() }; 
+                    state.activePrediction = { period: targetIssue, pred: signal.action, type: "SIZE", conf: 100, timestamp: Date.now() }; 
                     saveState(); 
                 } 
             } 
