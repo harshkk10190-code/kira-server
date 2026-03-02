@@ -537,7 +537,12 @@ if(signal.action !== "WAIT"){
     }
 
     saveState();
-} else if(signal && signal.action !== "WAIT" && signal.confidence >= 55) {
+} else if(
+    signal &&
+    signal.action !== "WAIT" &&
+    signal.confidence >= 60 &&
+    signal.regime === "TREND"
+) {
 
     const heatBlock = heatLock();
 
@@ -599,5 +604,5 @@ saveState();
     } 
 } 
 
-setInterval(tick, 2500); 
+setInterval(tick, 3000); 
 tick();
