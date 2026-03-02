@@ -148,10 +148,6 @@ function cooldownGate(){
 
     if(state.wasOverheated){
 
-        if(heat.label !== "Overheated"){
-            state.cooldownCycles++;
-        }
-
         if(state.cooldownCycles < 2){
             return {
                 blocked:true,
@@ -522,21 +518,22 @@ if(signal.action !== "WAIT"){
 
     if(heatBlock.blocked){
 
-        state.waitCount++;
+    state.waitCount++;
 
-        let msg = `🛑 <b>𝐇𝐄𝐀𝐓 𝐋𝐎𝐂𝐊 𝐀𝐂𝐓𝐈𝐕𝐄</b> 🛑\n`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
-        msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
-        msg += `🔥 <b>Market Status:</b> OVERHEATED\n`;
-        msg += `🛡️ <b>Protection:</b> Trade Blocked\n`;
-        msg += `📉 <i>Cooling required before next entry</i>`;
+    let msg = `🛑 <b>𝐇𝐄𝐀𝐓 𝐋𝐎𝐂𝐊 𝐀𝐂𝐓𝐈𝐕𝐄</b> 🛑\n`;
+    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
+    msg += `🔥 <b>Market Status:</b> OVERHEATED\n`;
+    msg += `🛡️ <b>Protection:</b> Trade Blocked\n`;
+    msg += `📉 <i>Cooling required before next entry</i>`;
 
-        await sendTelegram(msg);
+    await sendTelegram(msg);
 
-        saveState();
-        return;
-    } { 
-                    state.waitCount = 0; 
+    saveState();
+    return;
+}
+
+state.waitCount = 0;
                     if(state.recoveryMode){
     state.currentLevel = Math.max(1, Math.floor(FUND_LEVELS.length / 2));
     state.recoveryMode = false;
