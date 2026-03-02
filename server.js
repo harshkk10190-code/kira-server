@@ -199,14 +199,6 @@ function survivalReset(regime, confidence){
 // ==========================================
 // 📈 SMART 11-PATTERN ALGORITHM (V6.0 DEEP SCAN)
 // ==========================================
-const regime = regimeShield(list);
-
-if(!regime.tradable){
-    return {
-        action:"WAIT",
-        reason:`Regime Shield: ${regime.reason}`
-    };
-}
 
 function analyzeTrendsV7(list){
 
@@ -377,7 +369,7 @@ if(signal.action !== "WAIT"){
                 
                 if(signal && signal.action === "WAIT") {
 
-    const heat = getHeatMeter();
+   
 
     state.waitCount++;
 
