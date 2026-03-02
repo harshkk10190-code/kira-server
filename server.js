@@ -420,7 +420,7 @@ Cooling before next entry.`);
                     
                     // 🏛️ V6.0 TERMINAL UI UPDATE
                     let resMsg = isWin ? `✅ <b>𝐏𝐑𝐎𝐅𝐈𝐓 𝐒𝐄𝐂𝐔𝐑𝐄𝐃</b> ✅\n` : `🛑 <b>𝐓𝐀𝐑𝐆𝐄𝐓 𝐌𝐈𝐒𝐒𝐄𝐃</b> 🛑\n`; 
-                    resMsg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    resMsg += `⟡ ════════ ⋆★⋆ ════════ ⟡</code>\n`; 
                     resMsg += `🎯 <b>𝐏𝐞𝐫𝐢𝐨𝐝 :</b> <code>${state.activePrediction.period.slice(-4)}</code>\n`; 
                     resMsg += `🎲 <b>𝐑𝐞𝐬𝐮𝐥𝐭 :</b> ${actualNum} (${actualResult})\n`; 
                     resMsg += `📈 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐥𝐭𝐡 :</b> ${marketHealth}\n`;
@@ -430,7 +430,7 @@ Cooling before next entry.`);
                         resMsg += `🛡️ <b>𝐒𝐭𝐚𝐭𝐮𝐬 :</b> 𝐄𝐒𝐂𝐀𝐋𝐀𝐓𝐈𝐍𝐆 (𝐋𝐞𝐯𝐞𝐥 ${state.currentLevel + 1})\n`; 
                     }
                     resMsg += `🏆 <b>𝐖𝐢𝐧 𝐑𝐚𝐭𝐞 :</b> ${currentAccuracy}%\n`;
-                    resMsg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    resMsg += `⟡ ════════ ⋆★⋆ ════════ ⟡</code>\n`; 
                     
                     await sendTelegram(resMsg); 
                 } 
@@ -454,11 +454,11 @@ if(coolBlock.blocked){
         state.cooldownLockIssue = latestIssue;
 
         let msg = `❄️ <b>COOLDOWN MODE ACTIVE</b> ❄️\n`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
         msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
         msg += `🛡️ <b>Post-Heat Recovery</b>\n`;
         msg += `📉 <i>Waiting for stable flow before entry</i>`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
 
         await sendTelegram(msg);
     }
@@ -477,11 +477,11 @@ if(shock.trapped){
     state.shockLockIssue = latestIssue;
 
         let msg = `⚡ <b>SHOCK TRAP DETECTED</b> ⚡\n`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
         msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
         msg += `🛑 <b>Fake Breakout Blocked</b>\n`;
         msg += `🧠 <i>${shock.reason}</i>`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
 
         await sendTelegram(msg);
     }
@@ -520,14 +520,14 @@ if(signal.action !== "WAIT"){
     if (state.waitCount === 1 || state.waitCount % 15 === 0) {
 
         let msg = `📡 <b>𝐉𝐀𝐑𝐕𝐈𝐒 𝐌𝐀𝐑𝐊𝐄𝐓 𝐒𝐂𝐀𝐍</b> 📡\n`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
         msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
         msg += `⚠️ <b>𝐀𝐜𝐭𝐢𝐨𝐧:</b> SKIP\n`;
         msg += `🛡️ <b>𝐑𝐞𝐠𝐢𝐦𝐞:</b> ${signal.regime}\n`;
         msg += `🔥 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐭 :</b> ${heat.bars} (${heat.label})\n`;
         msg += `🧠 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`;
         msg += `🔇 <i>(Silencing further scans to prevent spam)</i>`;
-        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
 
         await sendTelegram(msg);
     }
@@ -542,12 +542,12 @@ if(signal.action !== "WAIT"){
     state.waitCount++;
 
     let msg = `🛑 <b>𝐇𝐄𝐀𝐓 𝐋𝐎𝐂𝐊 𝐀𝐂𝐓𝐈𝐕𝐄</b> 🛑\n`;
-    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
     msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
     msg += `🔥 <b>Market Status:</b> OVERHEATED\n`;
     msg += `🛡️ <b>Protection:</b> Trade Blocked\n`;
     msg += `📉 <i>Cooling required before next entry</i>`;
-    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡</code>\n`;
 
     await sendTelegram(msg);
 
@@ -565,7 +565,7 @@ let betAmount = FUND_LEVELS[state.currentLevel];
                     
                     // 🏛️ V6.0 TERMINAL UI UPDATE
                     let msg = `🏛️ <b>𝐉𝐀𝐑𝐕𝐈𝐒 𝐈𝐍𝐒𝐓𝐈𝐓𝐔𝐓𝐈𝐎𝐍𝐀𝐋 : 𝐄𝐗𝐄𝐂𝐔𝐓𝐄</b> 🏛️\n`; 
-                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡</code>\n`; 
                     msg += `🎯 <b>𝐓𝐚𝐫𝐠𝐞𝐭 𝐏𝐞𝐫𝐢𝐨𝐝 :</b> <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `📈 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐥𝐭𝐡 :</b> ${marketHealth}\n`;
                     msg += `🔥 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐭 :</b> ${heat.bars} (${heat.label})\n`;
@@ -577,7 +577,7 @@ let betAmount = FUND_LEVELS[state.currentLevel];
                     msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 :</b> Rs. ${betAmount}\n`; 
                     msg += `🧠 <b>𝐂𝐡𝐚𝐫𝐭 𝐋𝐨𝐠𝐢𝐜 :</b> <i>${signal.reason}</i>\n`;
 msg += `📊 <b>𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞 :</b> ${signal.confidence}%`; 
-                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`;
+                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡</code>\n`;
                     await sendTelegram(msg); 
                     state.activePrediction = { period: targetIssue, pred: signal.action, type: "SIZE", conf: 100, timestamp: Date.now() }; 
                     saveState(); 
