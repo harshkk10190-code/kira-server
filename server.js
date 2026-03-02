@@ -47,7 +47,10 @@ let state = {
     isStarted: false, 
     currentLevel: 0,
     waitCount: 0,
-    skipStreak: 0
+    skipStreak: 0,
+    cooldownCycles: 0,
+wasOverheated: false,
+recoveryMode: false
 };
 
 function loadState() { 
@@ -107,10 +110,91 @@ function getHeatMeter(){
     if(heat >= 4) label = "Overheated";
     else if(heat >= 2) label = "Trend Building";
 
+    // ==========================
+    // 🔥 HEAT MEMORY TRACKING
+    // ==========================
+    if(label === "Overheated"){
+        state.wasOverheated = true;
+        state.cooldownCycles = 0;
+    }
+
+    if(state.wasOverheated && label !== "Overheated"){
+        state.cooldownCycles++;
+    }
+
     return {
         bars,
         label
     };
+}
+
+function heatLock(){
+
+    const heat = getHeatMeter();
+
+    if(heat.label === "Overheated"){
+        return {
+            blocked: true,
+            reason: "Heat Lock Active"
+        };
+    }
+
+    return { blocked:false };
+}
+
+function cooldownGate(){
+
+    const heat = getHeatMeter();
+
+    if(state.wasOverheated){
+
+        if(heat.label !== "Overheated"){
+            state.cooldownCycles++;
+        }
+
+        if(state.cooldownCycles < 2){
+            return {
+                blocked:true,
+                reason:"Cooldown Stabilizing"
+            };
+        }
+
+        state.wasOverheated = false;
+        state.cooldownCycles = 0;
+    }
+
+    return { blocked:false };
+}
+
+function shockTrap(list){
+
+    let sizes = list.slice(0,6).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+
+    let last = sizes[0];
+    let prevStreak = 1;
+
+    for(let i=1;i<5;i++){
+        if(sizes[i] === sizes[i+1]) prevStreak++;
+        else break;
+    }
+
+    const heat = getHeatMeter();
+
+    // FAKE BREAKOUT CONDITIONS
+
+    // Calm market but sudden spike
+    if(heat.label === "Calm" && prevStreak >= 3){
+        if(sizes[0] !== sizes[1]){
+            return { trapped:true, reason:"Sudden Spike After Calm" };
+        }
+    }
+
+    // Overheated market reversal spike
+    if(heat.label === "Overheated" && sizes[0] !== sizes[1]){
+        return { trapped:true, reason:"Heat Reversal Trap" };
+    }
+
+    return { trapped:false };
 }
 
 function getConfidence(patternLength, regime, gravityAligned){
@@ -239,8 +323,13 @@ function analyzeTrendsV7(list){
     else if(match('SBSB')) { decision='SMALL'; length=4; }
 
     if(!decision){
-        return { action:"WAIT", regime:"MIXED", confidence:0 };
-    }
+    return {
+        action:"WAIT",
+        regime:"MIXED",
+        confidence:0,
+        reason:"No Pattern Alignment"
+    };
+}
 
     let gravityAligned =
         (gravity === 'S' && decision === 'SMALL') ||
@@ -311,11 +400,14 @@ async function tick() {
                         state.currentLevel = 0; 
                     } else { 
                         state.currentLevel++; 
-                        if(state.currentLevel >= FUND_LEVELS.length) {
-                            state.totalSignals++; 
-                            state.currentLevel = 0; 
-                            await sendTelegram(`🛑 <b>𝐌𝐀𝐗 𝐋𝐄𝐕𝐄𝐋 𝐑𝐄𝐀𝐂𝐇𝐄𝐃</b> 🛑\n⚠️ Algorithm detected massive anomaly. Resetting.`);
-                        }
+                        if(state.currentLevel >= FUND_LEVELS.length){
+
+    state.totalSignals++;
+    state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
+    state.recoveryMode = true;
+
+    await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>\nPost-loss survival engaged.\nNext entry will be boosted.`);
+}
                     } 
                     
                     let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
@@ -343,9 +435,45 @@ async function tick() {
         } 
         
         if(state.lastProcessedIssue !== latestIssue) { 
-            if(!state.activePrediction) { 
+            if(!state.activePrediction) {
 
-                const signal = analyzeTrendsV7(list);
+    const signal = analyzeTrendsV7(list);
+
+// ❄️ COOLDOWN MODE
+const coolBlock = cooldownGate();
+
+if(coolBlock.blocked){
+
+    let msg = `❄️ <b>COOLDOWN MODE ACTIVE</b> ❄️\n`;
+    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
+    msg += `🛡️ <b>Post-Heat Recovery</b>\n`;
+    msg += `📉 <i>Waiting for stable flow before entry</i>`;
+
+    await sendTelegram(msg);
+
+    state.waitCount++;
+    saveState();
+    return;
+}
+
+// ⚡ V7.6 SHOCK TRAP
+const shock = shockTrap(list);
+
+if(shock.trapped){
+
+    let msg = `⚡ <b>SHOCK TRAP DETECTED</b> ⚡\n`;
+    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
+    msg += `🛑 <b>Fake Breakout Blocked</b>\n`;
+    msg += `🧠 <i>${shock.reason}</i>`;
+
+    await sendTelegram(msg);
+
+    state.waitCount++;
+    saveState();
+    return;
+}
 
 if(signal.action !== "WAIT"){
 
@@ -388,9 +516,33 @@ if(signal.action !== "WAIT"){
     }
 
     saveState();
-} else if(signal && signal.action !== "WAIT" && signal.confidence >= 55) { 
+} else if(signal && signal.action !== "WAIT" && signal.confidence >= 55) {
+
+    const heatBlock = heatLock();
+
+    if(heatBlock.blocked){
+
+        state.waitCount++;
+
+        let msg = `🛑 <b>𝐇𝐄𝐀𝐓 𝐋𝐎𝐂𝐊 𝐀𝐂𝐓𝐈𝐕𝐄</b> 🛑\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
+        msg += `🔥 <b>Market Status:</b> OVERHEATED\n`;
+        msg += `🛡️ <b>Protection:</b> Trade Blocked\n`;
+        msg += `📉 <i>Cooling required before next entry</i>`;
+
+        await sendTelegram(msg);
+
+        saveState();
+        return;
+    } { 
                     state.waitCount = 0; 
-                    let betAmount = FUND_LEVELS[state.currentLevel]; 
+                    if(state.recoveryMode){
+    state.currentLevel = Math.max(1, Math.floor(FUND_LEVELS.length / 2));
+    state.recoveryMode = false;
+}
+
+let betAmount = FUND_LEVELS[state.currentLevel]; 
                     
                     // 🏛️ V6.0 TERMINAL UI UPDATE
                     let msg = `🏛️ <b>𝐉𝐀𝐑𝐕𝐈𝐒 𝐈𝐍𝐒𝐓𝐈𝐓𝐔𝐓𝐈𝐎𝐍𝐀𝐋 : 𝐄𝐗𝐄𝐂𝐔𝐓𝐄</b> 🏛️\n`; 
