@@ -20,7 +20,7 @@ app.listen(PORT, () => console.log(`🚀 JᴀʀᴠᎥຮ V6.0 Quant Algo listeni
 // ==========================================
 // ⚙️ CONFIGURATION
 // ==========================================
-const TELEGRAM_BOT_TOKEN = "8561861801:AAGEH-g5jr0BSDQ4XTiymmwEX9MmEFUF4d0"; 
+const TELEGRAM_BOT_TOKEN = "8561861801:AAFLPCpANEySHKKAa9D_npfErML4qBl-6c0"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"];
 
 const WINGO_API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30";
@@ -89,46 +89,77 @@ function getMarketHealth() {
 // ==========================================
 // 📈 SMART 11-PATTERN ALGORITHM (V6.0 DEEP SCAN)
 // ==========================================
-function analyzeTrends(list) {
-    let sizesArray = list.slice(0, 15).map(i => Number(i.number) <= 4 ? 'S' : 'B');
-    let history = sizesArray.reverse().join(''); 
+function analyzeTrendsV7(list) {
 
-    // Length 9 Patterns
-    if (history.endsWith('SSSSBBSSS')) return { action: 'SMALL', reason: '10. Four in Two Trend' };
-    if (history.endsWith('BBBBSSBBB')) return { action: 'BIG', reason: '10. Four in Two Trend' };
+    let sizes = list.slice(0, 15).map(i => Number(i.number) <= 4 ? 'S' : 'B');
 
-    // Length 8 Patterns
-    if (history.endsWith('BBBBSBBB')) return { action: 'BIG', reason: '9. Four in One Trend' };
-    if (history.endsWith('SSSSBSSS')) return { action: 'SMALL', reason: '9. Four in One Trend' };
+    let forward = sizes.join('');
+    let reverse = sizes.slice().reverse().join('');
 
-    // Length 7 Patterns
-    if (history.endsWith('SSSBBSS')) return { action: 'SMALL', reason: '8. Three in Two Trend' };
-    if (history.endsWith('BBBSSBB')) return { action: 'BIG', reason: '8. Three in Two Trend' };
-    if (history.endsWith('BBBBSSS')) return { action: 'SMALL', reason: '5. Quadra Trend' };
-    if (history.endsWith('SSSSBBB')) return { action: 'BIG', reason: '5. Quadra Trend' };
+    const match = (pattern) =>
+        forward.endsWith(pattern) || reverse.endsWith(pattern);
 
-    // Length 6 Patterns
-    if (history.endsWith('SSSBSS')) return { action: 'SMALL', reason: '6. Three in One Trend' };
-    if (history.endsWith('BBBSBB')) return { action: 'BIG', reason: '6. Three in One Trend' };
-    if (history.endsWith('BBSSBB')) return { action: 'SMALL', reason: '2. Double Trend (Extended)' };
-    if (history.endsWith('SSBBSS')) return { action: 'BIG', reason: '2. Double Trend (Extended)' };
+    // ======================
+    // REGIME FILTER
+    // ======================
+    let flips = 0;
+    for(let i=0;i<6;i++){
+        if(sizes[i] !== sizes[i+1]) flips++;
+    }
 
-    // Length 5 Patterns
-    if (history.endsWith('BBSBB')) return { action: 'SMALL', reason: '7. Two in One Trend' };
-    if (history.endsWith('SSBSS')) return { action: 'BIG', reason: '7. Two in One Trend' };
-    if (history.endsWith('SSSBB')) return { action: 'BIG', reason: '3. Triple Trend' };
-    if (history.endsWith('BBBSS')) return { action: 'SMALL', reason: '3. Triple Trend' };
-    if (history.endsWith('BBBBB')) return { action: 'BIG', reason: '11. Long Trend (Dragon)' };
-    if (history.endsWith('SSSSS')) return { action: 'SMALL', reason: '11. Long Trend (Dragon)' };
+    if(flips >= 4){
+        return { action:"WAIT", reason:"Chop Regime Detected" };
+    }
 
-    // Length 4 Patterns
-    if (history.endsWith('BSBS')) return { action: 'BIG', reason: '1. Single Trend (Alternating)' };
-    if (history.endsWith('SBSB')) return { action: 'SMALL', reason: '1. Single Trend (Alternating)' };
-    if (history.endsWith('BBSS')) return { action: 'BIG', reason: '2. Double Trend' };
-    if (history.endsWith('SSBB')) return { action: 'SMALL', reason: '2. Double Trend' };
+    // ======================
+    // GRAVITY CHECK
+    // ======================
+    let small=0,big=0;
+    for(let i=0;i<5;i++){
+        let n = Number(list[i].number);
+        if(n<=4) small++;
+        else big++;
+    }
+    let gravity = small>big ? 'S' : 'B';
 
-    // SMART SKIP
-    return { action: "WAIT", reason: "Market structure chaotic. Waiting for clear PDF pattern." };
+    // ======================
+    // 🔷 YOUR PDF PATTERNS (UPGRADED)
+    // ======================
+
+    if(match('SSSSBBSSS')) return { action: gravity==='S'?'SMALL':'BIG', reason:'10. Four in Two Trend' };
+    if(match('BBBBSSBBB')) return { action: gravity==='B'?'BIG':'SMALL', reason:'10. Four in Two Trend' };
+
+    if(match('BBBBSBBB')) return { action: gravity==='B'?'BIG':'SMALL', reason:'9. Four in One Trend' };
+    if(match('SSSSBSSS')) return { action: gravity==='S'?'SMALL':'BIG', reason:'9. Four in One Trend' };
+
+    if(match('SSSBBSS')) return { action: gravity==='S'?'SMALL':'BIG', reason:'8. Three in Two Trend' };
+    if(match('BBBSSBB')) return { action: gravity==='B'?'BIG':'SMALL', reason:'8. Three in Two Trend' };
+
+    if(match('BBBBSSS')) return { action: 'SMALL', reason:'5. Quadra Trend' };
+    if(match('SSSSBBB')) return { action: 'BIG', reason:'5. Quadra Trend' };
+
+    if(match('SSSBSS')) return { action:'SMALL', reason:'6. Three in One Trend' };
+    if(match('BBBSBB')) return { action:'BIG', reason:'6. Three in One Trend' };
+
+    if(match('BBSSBB')) return { action:'SMALL', reason:'2. Double Trend (Extended)' };
+    if(match('SSBBSS')) return { action:'BIG', reason:'2. Double Trend (Extended)' };
+
+    if(match('BBSBB')) return { action:'SMALL', reason:'7. Two in One Trend' };
+    if(match('SSBSS')) return { action:'BIG', reason:'7. Two in One Trend' };
+
+    if(match('SSSBB')) return { action:'BIG', reason:'3. Triple Trend' };
+    if(match('BBBSS')) return { action:'SMALL', reason:'3. Triple Trend' };
+
+    if(match('BBBBB')) return { action:'BIG', reason:'11. Long Trend' };
+    if(match('SSSSS')) return { action:'SMALL', reason:'11. Long Trend' };
+
+    if(match('BSBS')) return { action: gravity==='B'?'BIG':'SMALL', reason:'1. Single Trend' };
+    if(match('SBSB')) return { action: gravity==='S'?'SMALL':'BIG', reason:'1. Single Trend' };
+
+    if(match('BBSS')) return { action:'BIG', reason:'2. Double Trend' };
+    if(match('SSBB')) return { action:'SMALL', reason:'2. Double Trend' };
+
+    return { action:"WAIT", reason:"No Stable PDF Structure" };
 }
 
 // ========================================== 
@@ -216,7 +247,7 @@ async function tick() {
         if(state.lastProcessedIssue !== latestIssue) { 
             if(!state.activePrediction) { 
 
-                const signal = analyzeTrends(list);
+                const signal = analyzeTrendsV7(list);
                 let marketHealth = getMarketHealth();
                 
                 console.log(`\n[${new Date().toLocaleTimeString()}] 🎯 Period ${targetIssue.slice(-4)} | ALGO DECISION:`, signal);
