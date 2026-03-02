@@ -433,7 +433,6 @@ async function tick() {
         
         if(state.lastProcessedIssue !== latestIssue) {
 
-    state.shockLockIssue = null;
 
     if(!state.activePrediction) {
 
@@ -462,9 +461,8 @@ const shock = shockTrap(list);
 
 if(shock.trapped){
 
-    if(state.shockLockIssue !== targetIssue){
-
-        state.shockLockIssue = targetIssue;
+    if(state.shockLockIssue !== latestIssue){
+    state.shockLockIssue = latestIssue;
 
         let msg = `⚡ <b>SHOCK TRAP DETECTED</b> ⚡\n`;
         msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
@@ -570,6 +568,7 @@ msg += `📊 <b>𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞 :</b> ${signal.confiden
                     saveState(); 
                 } 
             } 
+            state.shockLockIssue = null;
             state.lastProcessedIssue = latestIssue; saveState(); 
         } 
     } catch (e) {
