@@ -458,6 +458,7 @@ if(coolBlock.blocked){
         msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
         msg += `🛡️ <b>Post-Heat Recovery</b>\n`;
         msg += `📉 <i>Waiting for stable flow before entry</i>`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
 
         await sendTelegram(msg);
     }
@@ -480,6 +481,7 @@ if(shock.trapped){
         msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
         msg += `🛑 <b>Fake Breakout Blocked</b>\n`;
         msg += `🧠 <i>${shock.reason}</i>`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
 
         await sendTelegram(msg);
     }
@@ -525,6 +527,7 @@ if(signal.action !== "WAIT"){
         msg += `🔥 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐭 :</b> ${heat.bars} (${heat.label})\n`;
         msg += `🧠 <b>𝐑𝐞𝐚𝐬𝐨𝐧:</b> <i>${signal.reason}</i>\n`;
         msg += `🔇 <i>(Silencing further scans to prevent spam)</i>`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
 
         await sendTelegram(msg);
     }
@@ -544,6 +547,7 @@ if(signal.action !== "WAIT"){
     msg += `🔥 <b>Market Status:</b> OVERHEATED\n`;
     msg += `🛡️ <b>Protection:</b> Trade Blocked\n`;
     msg += `📉 <i>Cooling required before next entry</i>`;
+    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
 
     await sendTelegram(msg);
 
@@ -565,15 +569,15 @@ let betAmount = FUND_LEVELS[state.currentLevel];
                     msg += `🎯 <b>𝐓𝐚𝐫𝐠𝐞𝐭 𝐏𝐞𝐫𝐢𝐨𝐝 :</b> <code>${targetIssue.slice(-4)}</code>\n`; 
                     msg += `📈 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐥𝐭𝐡 :</b> ${marketHealth}\n`;
                     msg += `🔥 <b>𝐌𝐚𝐫𝐤𝐞𝐭 𝐇𝐞𝐚𝐭 :</b> ${heat.bars} (${heat.label})\n`;
-                    msg += `📊 <b>𝐌𝐞𝐭𝐫𝐢𝐜 :</b> 📏 SIZE ONLY\n`; 
+                    msg += `📊 <b>𝐌𝐞𝐭𝐫𝐢𝐜 :</b> SIZE ONLY 📏\n`; 
                     msg += `🛡️ <b>𝐑𝐞𝐠𝐢𝐦𝐞 :</b> ${signal.regime}\n`;
-                    msg += `🔮 <b>𝐐𝐮𝐚𝐧𝐭 𝐒𝐢𝐠𝐧𝐚𝐥 : ${signal.action}</b>\n`; 
-                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`; 
+                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`
+                    msg += `🔮 <b>𝐐𝐮𝐚𝐧𝐭 𝐒𝐢𝐠𝐧𝐚𝐥 : ${signal.action}</b>\n`;
                     msg += `💎 <b>𝐄𝐧𝐭𝐫𝐲 𝐋𝐞𝐯𝐞𝐥 :</b> Level ${state.currentLevel + 1}\n`; 
                     msg += `💰 <b>𝐈𝐧𝐯𝐞𝐬𝐭𝐦𝐞𝐧𝐭 :</b> Rs. ${betAmount}\n`; 
                     msg += `🧠 <b>𝐂𝐡𝐚𝐫𝐭 𝐋𝐨𝐠𝐢𝐜 :</b> <i>${signal.reason}</i>\n`;
 msg += `📊 <b>𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞 :</b> ${signal.confidence}%`; 
-                    
+                    msg += `⟡ ════════ ⋆★⋆ ════════ ⟡\n`;
                     await sendTelegram(msg); 
                     state.activePrediction = { period: targetIssue, pred: signal.action, type: "SIZE", conf: 100, timestamp: Date.now() }; 
                     saveState(); 
