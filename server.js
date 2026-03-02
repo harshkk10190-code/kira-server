@@ -50,7 +50,8 @@ let state = {
     skipStreak: 0,
     cooldownCycles: 0,
 wasOverheated: false,
-recoveryMode: false
+recoveryMode: false,
+shockLockIssue: null
 };
 
 function loadState() { 
@@ -430,8 +431,11 @@ async function tick() {
             } 
         } 
         
-        if(state.lastProcessedIssue !== latestIssue) { 
-            if(!state.activePrediction) {
+        if(state.lastProcessedIssue !== latestIssue) {
+
+    state.shockLockIssue = null;
+
+    if(!state.activePrediction) {
 
     const signal = analyzeTrendsV7(list);
 
@@ -458,13 +462,18 @@ const shock = shockTrap(list);
 
 if(shock.trapped){
 
-    let msg = `⚡ <b>SHOCK TRAP DETECTED</b> ⚡\n`;
-    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
-    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
-    msg += `🛑 <b>Fake Breakout Blocked</b>\n`;
-    msg += `🧠 <i>${shock.reason}</i>`;
+    if(state.shockLockIssue !== targetIssue){
 
-    await sendTelegram(msg);
+        state.shockLockIssue = targetIssue;
+
+        let msg = `⚡ <b>SHOCK TRAP DETECTED</b> ⚡\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
+        msg += `🛑 <b>Fake Breakout Blocked</b>\n`;
+        msg += `🧠 <i>${shock.reason}</i>`;
+
+        await sendTelegram(msg);
+    }
 
     state.waitCount++;
     saveState();
