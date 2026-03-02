@@ -393,23 +393,26 @@ async function tick() {
                     let isWin = (actualResult === state.activePrediction.pred); 
                     
                     if(isWin) { 
-                        state.wins++; 
-                        state.totalSignals++; 
-                        state.currentLevel = 0; 
-                    } else { 
-                        state.currentLevel++; 
-                        if(state.currentLevel >= FUND_LEVELS.length - 1){
+    state.wins++; 
+    state.totalSignals++; 
+    state.currentLevel = 0; 
+} else { 
+    state.currentLevel++; 
 
-    state.totalSignals++;
-    state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
-    state.recoveryMode = true;
-    state.wasOverheated = true;   // 👈 force cooldown
-    state.cooldownCycles = 0;
+    if(state.currentLevel >= FUND_LEVELS.length - 1){
 
-    await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
+        state.totalSignals++;
+        state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
+        state.recoveryMode = true;
+        state.wasOverheated = true;
+        state.cooldownCycles = 0;
+
+        await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
 Post-loss survival engaged.
 Cooling before next entry.`);
-}
+    }
+
+}  // ✅ THIS WAS MISSING
                     
                     let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
                     let marketHealth = getMarketHealth();
