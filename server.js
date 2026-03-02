@@ -51,7 +51,8 @@ let state = {
     cooldownCycles: 0,
 wasOverheated: false,
 recoveryMode: false,
-shockLockIssue: null
+shockLockIssue: null,
+cooldownLockIssue: null
 };
 
 function loadState() { 
@@ -86,9 +87,9 @@ if (!state.isStarted) {
 // 📊 MARKET HEALTH MONITOR
 // ==========================================
 function getMarketHealth() {
-    if (state.currentLevel === 0 || state.currentLevel === 1) return "🟢 STABLE";
-    if (state.currentLevel === 2 || state.currentLevel === 3) return "🟡 VOLATILE";
-    return "🔴 DANGEROUS";
+    if (state.currentLevel === 0 || state.currentLevel === 1) return "STABLE ♻️";
+    if (state.currentLevel === 2 || state.currentLevel === 3) return "VOLATILE 🌕";
+    return "DANGEROUS 🩸";
 }
 
 function getHeatMeter(){
@@ -397,15 +398,18 @@ async function tick() {
                         state.currentLevel = 0; 
                     } else { 
                         state.currentLevel++; 
-                        if(state.currentLevel >= FUND_LEVELS.length){
+                        if(state.currentLevel >= FUND_LEVELS.length - 1){
 
     state.totalSignals++;
     state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
     state.recoveryMode = true;
+    state.wasOverheated = true;   // 👈 force cooldown
+    state.cooldownCycles = 0;
 
-    await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>\nPost-loss survival engaged.\nNext entry will be boosted.`);
+    await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
+Post-loss survival engaged.
+Cooling before next entry.`);
 }
-                    } 
                     
                     let currentAccuracy = state.totalSignals > 0 ? Math.round((state.wins / state.totalSignals) * 100) : 100; 
                     let marketHealth = getMarketHealth();
@@ -443,13 +447,17 @@ const coolBlock = cooldownGate();
 
 if(coolBlock.blocked){
 
-    let msg = `❄️ <b>COOLDOWN MODE ACTIVE</b> ❄️\n`;
-    msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
-    msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
-    msg += `🛡️ <b>Post-Heat Recovery</b>\n`;
-    msg += `📉 <i>Waiting for stable flow before entry</i>`;
+    if(state.cooldownLockIssue !== latestIssue){
+        state.cooldownLockIssue = latestIssue;
 
-    await sendTelegram(msg);
+        let msg = `❄️ <b>COOLDOWN MODE ACTIVE</b> ❄️\n`;
+        msg += `⟡ ═════ ⋆★⋆ ═════ ⟡\n`;
+        msg += `🎯 𝐏𝐞𝐫𝐢𝐨𝐝: <code>${targetIssue.slice(-4)}</code>\n`;
+        msg += `🛡️ <b>Post-Heat Recovery</b>\n`;
+        msg += `📉 <i>Waiting for stable flow before entry</i>`;
+
+        await sendTelegram(msg);
+    }
 
     state.waitCount++;
     saveState();
@@ -569,7 +577,9 @@ msg += `📊 <b>𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞 :</b> ${signal.confiden
                 } 
             } 
             state.shockLockIssue = null;
-            state.lastProcessedIssue = latestIssue; saveState(); 
+state.cooldownLockIssue = null;
+state.lastProcessedIssue = latestIssue;
+saveState();
         } 
     } catch (e) {
         console.log(`[API ERROR] ${e.message}`);
