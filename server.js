@@ -20,11 +20,11 @@ app.listen(PORT, () => console.log(`🚀 JᴀʀᴠᎥຮ V6.0 Quant Algo listeni
 // ==========================================
 // ⚙️ CONFIGURATION
 // ==========================================
-const TELEGRAM_BOT_TOKEN = "8561861801:AAEIloHdU86cX8HQ1n6uVa_xxa00mLsx-jw"; 
+const TELEGRAM_BOT_TOKEN = "8561861801:AAFX5YGALxy_qmoRgbj8c93YHVz6vOVuIHc"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"];
 
 const WINGO_API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30";
-const FUND_LEVELS = [33, 66, 130, 260, 550, 1100]; 
+const FUND_LEVELS = [10, 20, 40, 80, 160, 320]; 
 
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36", 
@@ -185,7 +185,7 @@ function shockTrap(list){
     // FAKE BREAKOUT CONDITIONS
 
     // Calm market but sudden spike
-    if(heat.label === "Calm" && prevStreak >= 3){
+    if(heat.label === "Calm" && prevStreak >= 4){
         if(sizes[0] !== sizes[1]){
             return { trapped:true, reason:"Sudden Spike After Calm" };
         }
@@ -203,14 +203,40 @@ function getConfidence(patternLength, regime, gravityAligned){
 
     let score = 50;
 
+    // ==========================
+    // Pattern Strength
+    // ==========================
     if(patternLength >= 5) score += 20;
     else if(patternLength >= 4) score += 10;
 
-    if(regime === "TREND") score += 15;
-    if(regime === "CHOP") score -= 20;
+    // ==========================
+    // Market Regime Weight
+    // ==========================
+    if(regime === "TREND") score += 20;
+    if(regime === "STABLE") score += 8;
+    if(regime === "CHOP") score -= 25;
 
+    // ==========================
+    // Gravity Alignment
+    // ==========================
     if(gravityAligned) score += 10;
 
+    // ==========================
+    // V8 Heat Adaptive Logic
+    // ==========================
+    const heat = getHeatMeter();
+
+    if(heat.label === "Trend Building"){
+        score -= 5;
+    }
+
+    if(heat.label === "Overheated"){
+        score -= 15;
+    }
+
+    // ==========================
+    // Clamp Range
+    // ==========================
     return Math.max(40, Math.min(95, score));
 }
 
@@ -283,6 +309,93 @@ function survivalReset(regime, confidence){
 }
 
 // ==========================================
+// 🧠 V8.1 PATTERN MEMORY AI
+// ==========================================
+
+function patternMemory(list){
+
+    let sizes = list.slice(0,20).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+
+    let seq = sizes.join('');
+
+    if(seq.includes("BBBSSBBBSS")){
+        return { action:"BIG", confidence:85, reason:"Memory Loop Break" };
+    }
+
+    if(seq.includes("SSSBBSSSBB")){
+        return { action:"SMALL", confidence:85, reason:"Memory Loop Break" };
+    }
+
+    return null;
+}
+
+// ==========================================
+// 🧠 V9 QUANTUM PATTERN ENGINE
+// ==========================================
+
+function quantumPattern(list){
+
+    let sizes = list.slice(0,8).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+
+    let seq = sizes.join('');
+
+    // Momentum Continuation
+    if(seq.startsWith("BBB") && sizes.length > 3 && sizes[3] === 'S'){
+        return { action:"BIG", confidence:80, reason:"Quantum Momentum" };
+    }
+
+    if(seq.startsWith("SSS") && sizes[3] === 'B'){
+        return { action:"SMALL", confidence:80, reason:"Quantum Momentum" };
+    }
+
+    // Compression Breakout
+    if(seq.startsWith("BBBS")){
+        return { action:"BIG", confidence:75, reason:"Quantum Compression Break" };
+    }
+
+    if(seq.startsWith("SSSB")){
+        return { action:"SMALL", confidence:75, reason:"Quantum Compression Break" };
+    }
+
+    // Micro Alternation Trap
+    if(seq.startsWith("BSBS")){
+        return { action:"BIG", confidence:70, reason:"Quantum Alt Trap" };
+    }
+
+    if(seq.startsWith("SBSB")){
+        return { action:"SMALL", confidence:70, reason:"Quantum Alt Trap" };
+    }
+
+    return null;
+}
+
+// ==========================================
+// 🎲 V8.3 RNG BIAS DETECTOR
+// ==========================================
+
+function detectBias(list){
+
+    let sizes = list.slice(0,15).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+
+    let small=0,big=0;
+
+    sizes.forEach(s=>{
+        if(s==="S") small++;
+        else big++;
+    });
+
+    if(big >= 10){
+        return "BIG";
+    }
+
+    if(small >= 10){
+        return "SMALL";
+    }
+
+    return null;
+}
+
+// ==========================================
 // 📈 SMART 11-PATTERN ALGORITHM (V6.0 DEEP SCAN)
 // ==========================================
 
@@ -299,20 +412,50 @@ function analyzeTrendsV7(list){
         };
     }
 
-    let sizes = list.slice(0, 10).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+    let sizes = list.slice(0, 12).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+    
+// 🧠 Pattern Memory AI
+const memory = patternMemory(list);
+
+if(memory){
+    return {
+        action: memory.action,
+        regime: "STABLE",
+        confidence: memory.confidence,
+        reason: memory.reason
+    };
+}
+
+// 🧠 V9 Quantum Pattern Engine
+const quantum = quantumPattern(list);
+
+if(quantum){
+    return {
+        action: quantum.action,
+        regime: "STABLE",
+        confidence: quantum.confidence,
+        reason: quantum.reason
+    };
+}
 
     let forward = sizes.join('');
     let reverse = sizes.slice().reverse().join('');
 
     const match = (p)=> forward.endsWith(p) || reverse.endsWith(p);
 
-    let small=0,big=0;
-    for(let i=0;i<5;i++){
-        let n = Number(list[i].number);
-        if(n<=4) small++; else big++;
-    }
+    const bias = detectBias(list);
 
-    let gravity = small>big?'S':'B';
+let small=0,big=0;
+for(let i=0;i<5;i++){
+    let n = Number(list[i].number);
+    if(n<=4) small++; else big++;
+}
+
+let gravity = small>big?'S':'B';
+
+// 🎲 V8 RNG Bias Override
+if(bias === "BIG") gravity = "B";
+if(bias === "SMALL") gravity = "S";
 
     let decision = null;
     let length = 0;
@@ -337,7 +480,17 @@ function analyzeTrendsV7(list){
         (gravity === 'S' && decision === 'SMALL') ||
         (gravity === 'B' && decision === 'BIG');
 
-    let regimeType = regime.reason === "Strong Trend" ? "TREND" : "MIXED";
+    let regimeType;
+
+if(regime.reason === "Strong Trend"){
+    regimeType = "TREND";
+}
+else if(regime.reason === "Stable Flow"){
+    regimeType = "STABLE";
+}
+else{
+    regimeType = "CHOP";
+}
 
     let confidence = getConfidence(length, regimeType, gravityAligned);
 
@@ -540,8 +693,15 @@ if(signal.action !== "WAIT"){
 } else if(
     signal &&
     signal.action !== "WAIT" &&
-    signal.confidence >= 60 &&
-    signal.regime === "TREND"
+    (
+        // 🔥 Strong Trend Entry
+        (signal.regime === "TREND" && signal.confidence >= 60)
+
+        ||
+
+        // ⚖️ Balanced Mixed Entry
+        (signal.regime === "STABLE" && signal.confidence >= 75)
+    )
 ) {
 
     const heatBlock = heatLock();
