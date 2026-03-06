@@ -20,11 +20,13 @@ app.listen(PORT, () => console.log(`🚀 JᴀʀᴠᎥຮ V6.0 Quant Algo listeni
 // ==========================================
 // ⚙️ CONFIGURATION
 // ==========================================
-const TELEGRAM_BOT_TOKEN = "8561861801:AAFX5YGALxy_qmoRgbj8c93YHVz6vOVuIHc"; 
+const TELEGRAM_BOT_TOKEN = "8561861801:AAGTj4kboJMkBtlK_bZsozlEQm7r5N2yYBE"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"];
 
+let lastUpdateId = 0;
+
 const WINGO_API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30";
-const FUND_LEVELS = [10, 20, 40, 80, 160, 320]; 
+const FUND_LEVELS = [33, 66, 130, 260, 550, 1100]; 
 
 const HEADERS = { 
     "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36", 
@@ -44,6 +46,7 @@ let state = {
     activePrediction: null, 
     totalSignals: 0, 
     wins: 0, 
+    lossStreak: 0,
     isStarted: false, 
     currentLevel: 0,
     waitCount: 0,
@@ -52,7 +55,9 @@ let state = {
 wasOverheated: false,
 recoveryMode: false,
 shockLockIssue: null,
-cooldownLockIssue: null
+cooldownLockIssue: null,
+patternStats: {},
+lastKiller: null
 };
 
 function loadState() { 
@@ -75,6 +80,86 @@ async function sendTelegram(text) {
         } catch(e) {} 
     } 
 } 
+
+async function sendStats(chat_id){
+
+    let msg = `🧠 <b>JARVIS AI STATISTICS TERMINAL</b>\n`;
+    msg += divider();
+
+    const accuracy = state.totalSignals > 0
+        ? Math.round((state.wins/state.totalSignals)*100)
+        : 100;
+
+    msg += `📊 <b>System Performance</b>\n`;
+    msg += `Signals : ${state.totalSignals}\n`;
+    msg += `Wins    : ${state.wins}\n`;
+    msg += `Accuracy: ${accuracy}%\n\n`;
+
+    msg += `🧠 <b>Pattern Intelligence</b>\n`;
+
+    const patterns = state.patternStats;
+
+    if(Object.keys(patterns).length === 0){
+        msg += `No pattern data yet.\n`;
+    }else{
+
+        for(const p in patterns){
+
+            const s = patterns[p];
+            const total = s.wins + s.losses;
+            const winrate = total ? Math.round((s.wins/total)*100) : 0;
+
+            msg += `\n<b>${p}</b>\n`;
+            msg += `Wins        : ${s.wins}\n`;
+            msg += `Losses      : ${s.losses}\n`;
+            msg += `Winrate     : ${winrate}%\n`;
+            msg += `LadderFails : ${s.ladderFails}\n`;
+        }
+    }
+
+    msg += divider();
+    msg += `⚙️ <i>Adaptive Learning Engine Active</i>`;
+
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            chat_id,
+            text:msg,
+            parse_mode:"HTML"
+        })
+    });
+}
+
+async function sendHealth(chat_id){
+
+    const heat = getHeatMeter();
+    const market = getMarketHealth();
+
+    let msg = `🧠 <b>JARVIS MARKET HEALTH TERMINAL</b>\n`;
+    msg += divider();
+
+    msg += `📊 <b>Market Status</b>\n`;
+    msg += `Health : ${market}\n`;
+    msg += `Heat   : ${heat.bars} (${heat.label})\n\n`;
+
+    msg += `⚙️ <b>System State</b>\n`;
+    msg += `Martingale Level : ${state.currentLevel + 1}\n`;
+    msg += `Wait Cycles      : ${state.waitCount}\n`;
+    msg += `Cooldown Cycles  : ${state.cooldownCycles}\n`;
+
+    msg += divider();
+
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            chat_id,
+            text:msg,
+            parse_mode:"HTML"
+        })
+    });
+}
 
 function divider(){
     return `<pre>⟡ ════════ ⋆★⋆ ════════ ⟡</pre>\n`;
@@ -203,40 +288,45 @@ function getConfidence(patternLength, regime, gravityAligned){
 
     let score = 50;
 
-    // ==========================
-    // Pattern Strength
-    // ==========================
+    // Pattern strength
     if(patternLength >= 5) score += 20;
     else if(patternLength >= 4) score += 10;
 
-    // ==========================
-    // Market Regime Weight
-    // ==========================
+    // Market regime
     if(regime === "TREND") score += 20;
-    if(regime === "STABLE") score += 8;
+    if(regime === "STABLE") score += 5;
     if(regime === "CHOP") score -= 25;
 
-    // ==========================
-    // Gravity Alignment
-    // ==========================
+    // Gravity alignment
     if(gravityAligned) score += 10;
 
     // ==========================
-    // V8 Heat Adaptive Logic
+    // 🧠 SELF LEARNING PATTERN AI
     // ==========================
-    const heat = getHeatMeter();
 
-    if(heat.label === "Trend Building"){
-        score -= 5;
+    const patternName = `Pattern-${patternLength}`;
+    const stats = state.patternStats[patternName];
+
+    if(stats){
+
+        const total = stats.wins + stats.losses;
+
+        if(total >= 15){
+
+            const winrate = stats.wins / total;
+
+            // Bad pattern
+            if(winrate < 0.45){
+                score -= 15;
+            }
+
+            // Good pattern
+            if(winrate > 0.65){
+                score += 10;
+            }
+        }
     }
 
-    if(heat.label === "Overheated"){
-        score -= 15;
-    }
-
-    // ==========================
-    // Clamp Range
-    // ==========================
     return Math.max(40, Math.min(95, score));
 }
 
@@ -308,91 +398,48 @@ function survivalReset(regime, confidence){
     return false;
 }
 
-// ==========================================
-// 🧠 V8.1 PATTERN MEMORY AI
-// ==========================================
+function recordPattern(pattern, win){
 
-function patternMemory(list){
+    if(!pattern) return;
 
-    let sizes = list.slice(0,20).map(i => Number(i.number) <= 4 ? 'S' : 'B');
-
-    let seq = sizes.join('');
-
-    if(seq.includes("BBBSSBBBSS")){
-        return { action:"BIG", confidence:85, reason:"Memory Loop Break" };
+    if(!state.patternStats[pattern]){
+        state.patternStats[pattern] = {
+            wins: 0,
+            losses: 0,
+            ladderFails: 0
+        };
     }
 
-    if(seq.includes("SSSBBSSSBB")){
-        return { action:"SMALL", confidence:85, reason:"Memory Loop Break" };
+    if(win){
+        state.patternStats[pattern].wins++;
+    }else{
+        state.patternStats[pattern].losses++;
     }
 
-    return null;
+    saveState();
 }
 
-// ==========================================
-// 🧠 V9 QUANTUM PATTERN ENGINE
-// ==========================================
+function detectKillerPattern(){
 
-function quantumPattern(list){
+    let killer = null;
+    let worstRate = 1;
 
-    let sizes = list.slice(0,8).map(i => Number(i.number) <= 4 ? 'S' : 'B');
+    for(const p in state.patternStats){
 
-    let seq = sizes.join('');
+        const s = state.patternStats[p];
+        const total = s.wins + s.losses;
 
-    // Momentum Continuation
-    if(seq.startsWith("BBB") && sizes.length > 3 && sizes[3] === 'S'){
-        return { action:"BIG", confidence:80, reason:"Quantum Momentum" };
+        if(total < 10) continue;
+
+        const rate = s.wins / total;
+
+        if(rate < worstRate){
+            worstRate = rate;
+            killer = p;
+        }
     }
 
-    if(seq.startsWith("SSS") && sizes[3] === 'B'){
-        return { action:"SMALL", confidence:80, reason:"Quantum Momentum" };
-    }
-
-    // Compression Breakout
-    if(seq.startsWith("BBBS")){
-        return { action:"BIG", confidence:75, reason:"Quantum Compression Break" };
-    }
-
-    if(seq.startsWith("SSSB")){
-        return { action:"SMALL", confidence:75, reason:"Quantum Compression Break" };
-    }
-
-    // Micro Alternation Trap
-    if(seq.startsWith("BSBS")){
-        return { action:"BIG", confidence:70, reason:"Quantum Alt Trap" };
-    }
-
-    if(seq.startsWith("SBSB")){
-        return { action:"SMALL", confidence:70, reason:"Quantum Alt Trap" };
-    }
-
-    return null;
-}
-
-// ==========================================
-// 🎲 V8.3 RNG BIAS DETECTOR
-// ==========================================
-
-function detectBias(list){
-
-    let sizes = list.slice(0,15).map(i => Number(i.number) <= 4 ? 'S' : 'B');
-
-    let small=0,big=0;
-
-    sizes.forEach(s=>{
-        if(s==="S") small++;
-        else big++;
-    });
-
-    if(big >= 10){
-        return "BIG";
-    }
-
-    if(small >= 10){
-        return "SMALL";
-    }
-
-    return null;
+    return killer;
 }
 
 // ==========================================
@@ -400,6 +447,15 @@ function detectBias(list){
 // ==========================================
 
 function analyzeTrendsV7(list){
+
+if(state.lossStreak >= 3){
+    return {
+        action:"WAIT",
+        regime:"PROTECTION",
+        confidence:0,
+        reason:"Loss Streak Protection"
+    };
+}
 
     const regime = regimeShield(list);
 
@@ -412,50 +468,20 @@ function analyzeTrendsV7(list){
         };
     }
 
-    let sizes = list.slice(0, 12).map(i => Number(i.number) <= 4 ? 'S' : 'B');
-    
-// 🧠 Pattern Memory AI
-const memory = patternMemory(list);
-
-if(memory){
-    return {
-        action: memory.action,
-        regime: "STABLE",
-        confidence: memory.confidence,
-        reason: memory.reason
-    };
-}
-
-// 🧠 V9 Quantum Pattern Engine
-const quantum = quantumPattern(list);
-
-if(quantum){
-    return {
-        action: quantum.action,
-        regime: "STABLE",
-        confidence: quantum.confidence,
-        reason: quantum.reason
-    };
-}
+    let sizes = list.slice(0, 10).map(i => Number(i.number) <= 4 ? 'S' : 'B');
 
     let forward = sizes.join('');
     let reverse = sizes.slice().reverse().join('');
 
     const match = (p)=> forward.endsWith(p) || reverse.endsWith(p);
 
-    const bias = detectBias(list);
+    let small=0,big=0;
+    for(let i=0;i<5;i++){
+        let n = Number(list[i].number);
+        if(n<=4) small++; else big++;
+    }
 
-let small=0,big=0;
-for(let i=0;i<5;i++){
-    let n = Number(list[i].number);
-    if(n<=4) small++; else big++;
-}
-
-let gravity = small>big?'S':'B';
-
-// 🎲 V8 RNG Bias Override
-if(bias === "BIG") gravity = "B";
-if(bias === "SMALL") gravity = "S";
+    let gravity = small>big?'S':'B';
 
     let decision = null;
     let length = 0;
@@ -548,26 +574,39 @@ async function tick() {
                     let actualNum = Number(resultItem.number); 
                     let actualResult = getSize(actualNum); 
                     let isWin = (actualResult === state.activePrediction.pred); 
+                    recordPattern(state.activePrediction.pattern, isWin);
                     
-                    if(isWin) { 
-    state.wins++; 
-    state.totalSignals++; 
-    state.currentLevel = 0; 
+                    if(isWin) {
+    state.wins++;
+    state.totalSignals++;
+    state.currentLevel = 0;
+    state.lossStreak = 0;
 } else { 
     state.currentLevel++; 
+    state.lossStreak++;
 
     if(state.currentLevel >= FUND_LEVELS.length - 1){
 
-        state.totalSignals++;
-        state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
-        state.recoveryMode = true;
-        state.wasOverheated = true;
-        state.cooldownCycles = 0;
+    // 🧠 Record Ladder Crash Pattern
+    if(state.activePrediction && state.activePrediction.pattern){
 
-        await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
+        const p = state.activePrediction.pattern;
+
+        if(state.patternStats[p]){
+            state.patternStats[p].ladderFails++;
+        }
+    }
+
+    state.totalSignals++;
+    state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
+    state.recoveryMode = true;
+    state.wasOverheated = true;
+    state.cooldownCycles = 0;
+
+    await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
 Post-loss survival engaged.
 Cooling before next entry.`);
-    }
+}
 
 }  // ✅ THIS WAS MISSING
                     
@@ -589,7 +628,27 @@ Cooling before next entry.`);
                     resMsg += `🏆 <b>𝐖𝐢𝐧 𝐑𝐚𝐭𝐞 :</b> ${currentAccuracy}%\n`;
                     resMsg += divider(); 
                     
-                    await sendTelegram(resMsg); 
+                    await sendTelegram(resMsg);
+
+// 🧠 Pattern Intelligence Check
+const killer = detectKillerPattern();
+
+if(killer && state.lastKiller !== killer){
+
+    state.lastKiller = killer;
+    saveState();
+
+    await sendTelegram(
+`🧠 <b>PATTERN ANALYSIS</b>
+
+⚠️ Weak Pattern Detected
+
+${killer}
+
+Winrate below system average.
+Consider disabling this pattern.`
+);
+} 
                 } 
                 state.activePrediction = null; saveState(); 
             } 
@@ -748,7 +807,14 @@ let betAmount = FUND_LEVELS[state.currentLevel];
 msg += `📊 <b>𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞 :</b> ${signal.confidence}%`; 
                     msg += divider();
                     await sendTelegram(msg); 
-                    state.activePrediction = { period: targetIssue, pred: signal.action, type: "SIZE", conf: 100, timestamp: Date.now() }; 
+                    state.activePrediction = {
+    period: targetIssue,
+    pred: signal.action,
+    pattern: signal.reason,
+    type: "SIZE",
+    conf: 100,
+    timestamp: Date.now()
+}; 
                     saveState(); 
                 } 
             } 
@@ -764,5 +830,44 @@ saveState();
     } 
 } 
 
-setInterval(tick, 3000); 
+// ==========================
+// 🧠 TELEGRAM COMMAND HANDLER
+// ==========================
+async function checkCommands(){
+
+    try{
+
+        const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId+1}`);
+        const data = await res.json();
+
+        if(!data.result) return;
+
+        for(const update of data.result){
+
+            lastUpdateId = update.update_id;
+
+            if(!update.message) continue;
+
+            const chat_id = update.message.chat.id;
+            const text = update.message.text;
+
+            if(text === "/stats"){
+    await sendStats(chat_id);
+}
+
+if(text === "/health"){
+    await sendHealth(chat_id);
+}
+        }
+
+    }catch(e){}
+}
+
+
+// ==========================================
+// ⚙️ SYSTEM LOOPS
+// ==========================================
+
+setInterval(checkCommands,5000);   // listen for /stats
+setInterval(tick,3000);            // main trading engine
 tick();
