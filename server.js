@@ -20,10 +20,8 @@ app.listen(PORT, () => console.log(`🚀 JᴀʀᴠᎥຮ V6.0 Quant Algo listeni
 // ==========================================
 // ⚙️ CONFIGURATION
 // ==========================================
-const TELEGRAM_BOT_TOKEN = "8561861801:AAGTj4kboJMkBtlK_bZsozlEQm7r5N2yYBE"; 
+const TELEGRAM_BOT_TOKEN = "8561861801:AAFhEdyImaoSI5kmDc88Pu1q-ku_u1xYgJY"; 
 const TARGET_CHATS = ["1669843747", "-1002613316641"];
-
-let lastUpdateId = 0;
 
 const WINGO_API = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?pageNo=1&pageSize=30";
 const FUND_LEVELS = [33, 66, 130, 260, 550, 1100]; 
@@ -46,7 +44,6 @@ let state = {
     activePrediction: null, 
     totalSignals: 0, 
     wins: 0, 
-    lossStreak: 0,
     isStarted: false, 
     currentLevel: 0,
     waitCount: 0,
@@ -55,9 +52,7 @@ let state = {
 wasOverheated: false,
 recoveryMode: false,
 shockLockIssue: null,
-cooldownLockIssue: null,
-patternStats: {},
-lastKiller: null
+cooldownLockIssue: null
 };
 
 function loadState() { 
@@ -80,86 +75,6 @@ async function sendTelegram(text) {
         } catch(e) {} 
     } 
 } 
-
-async function sendStats(chat_id){
-
-    let msg = `🧠 <b>JARVIS AI STATISTICS TERMINAL</b>\n`;
-    msg += divider();
-
-    const accuracy = state.totalSignals > 0
-        ? Math.round((state.wins/state.totalSignals)*100)
-        : 100;
-
-    msg += `📊 <b>System Performance</b>\n`;
-    msg += `Signals : ${state.totalSignals}\n`;
-    msg += `Wins    : ${state.wins}\n`;
-    msg += `Accuracy: ${accuracy}%\n\n`;
-
-    msg += `🧠 <b>Pattern Intelligence</b>\n`;
-
-    const patterns = state.patternStats;
-
-    if(Object.keys(patterns).length === 0){
-        msg += `No pattern data yet.\n`;
-    }else{
-
-        for(const p in patterns){
-
-            const s = patterns[p];
-            const total = s.wins + s.losses;
-            const winrate = total ? Math.round((s.wins/total)*100) : 0;
-
-            msg += `\n<b>${p}</b>\n`;
-            msg += `Wins        : ${s.wins}\n`;
-            msg += `Losses      : ${s.losses}\n`;
-            msg += `Winrate     : ${winrate}%\n`;
-            msg += `LadderFails : ${s.ladderFails}\n`;
-        }
-    }
-
-    msg += divider();
-    msg += `⚙️ <i>Adaptive Learning Engine Active</i>`;
-
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-            chat_id,
-            text:msg,
-            parse_mode:"HTML"
-        })
-    });
-}
-
-async function sendHealth(chat_id){
-
-    const heat = getHeatMeter();
-    const market = getMarketHealth();
-
-    let msg = `🧠 <b>JARVIS MARKET HEALTH TERMINAL</b>\n`;
-    msg += divider();
-
-    msg += `📊 <b>Market Status</b>\n`;
-    msg += `Health : ${market}\n`;
-    msg += `Heat   : ${heat.bars} (${heat.label})\n\n`;
-
-    msg += `⚙️ <b>System State</b>\n`;
-    msg += `Martingale Level : ${state.currentLevel + 1}\n`;
-    msg += `Wait Cycles      : ${state.waitCount}\n`;
-    msg += `Cooldown Cycles  : ${state.cooldownCycles}\n`;
-
-    msg += divider();
-
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-            chat_id,
-            text:msg,
-            parse_mode:"HTML"
-        })
-    });
-}
 
 function divider(){
     return `<pre>⟡ ════════ ⋆★⋆ ════════ ⟡</pre>\n`;
@@ -288,44 +203,14 @@ function getConfidence(patternLength, regime, gravityAligned){
 
     let score = 50;
 
-    // Pattern strength
     if(patternLength >= 5) score += 20;
     else if(patternLength >= 4) score += 10;
 
-    // Market regime
     if(regime === "TREND") score += 20;
-    if(regime === "STABLE") score += 5;
+if(regime === "STABLE") score += 5;
     if(regime === "CHOP") score -= 25;
 
-    // Gravity alignment
     if(gravityAligned) score += 10;
-
-    // ==========================
-    // 🧠 SELF LEARNING PATTERN AI
-    // ==========================
-
-    const patternName = `Pattern-${patternLength}`;
-    const stats = state.patternStats[patternName];
-
-    if(stats){
-
-        const total = stats.wins + stats.losses;
-
-        if(total >= 15){
-
-            const winrate = stats.wins / total;
-
-            // Bad pattern
-            if(winrate < 0.45){
-                score -= 15;
-            }
-
-            // Good pattern
-            if(winrate > 0.65){
-                score += 10;
-            }
-        }
-    }
 
     return Math.max(40, Math.min(95, score));
 }
@@ -398,64 +283,11 @@ function survivalReset(regime, confidence){
     return false;
 }
 
-function recordPattern(pattern, win){
-
-    if(!pattern) return;
-
-    if(!state.patternStats[pattern]){
-        state.patternStats[pattern] = {
-            wins: 0,
-            losses: 0,
-            ladderFails: 0
-        };
-    }
-
-    if(win){
-        state.patternStats[pattern].wins++;
-    }else{
-        state.patternStats[pattern].losses++;
-    }
-
-    saveState();
-}
-
-function detectKillerPattern(){
-
-    let killer = null;
-    let worstRate = 1;
-
-    for(const p in state.patternStats){
-
-        const s = state.patternStats[p];
-        const total = s.wins + s.losses;
-
-        if(total < 10) continue;
-
-        const rate = s.wins / total;
-
-        if(rate < worstRate){
-            worstRate = rate;
-            killer = p;
-        }
-    }
-
-    return killer;
-}
-
 // ==========================================
 // 📈 SMART 11-PATTERN ALGORITHM (V6.0 DEEP SCAN)
 // ==========================================
 
 function analyzeTrendsV7(list){
-
-if(state.lossStreak >= 3){
-    return {
-        action:"WAIT",
-        regime:"PROTECTION",
-        confidence:0,
-        reason:"Loss Streak Protection"
-    };
-}
 
     const regime = regimeShield(list);
 
@@ -574,39 +406,26 @@ async function tick() {
                     let actualNum = Number(resultItem.number); 
                     let actualResult = getSize(actualNum); 
                     let isWin = (actualResult === state.activePrediction.pred); 
-                    recordPattern(state.activePrediction.pattern, isWin);
                     
-                    if(isWin) {
-    state.wins++;
-    state.totalSignals++;
-    state.currentLevel = 0;
-    state.lossStreak = 0;
+                    if(isWin) { 
+    state.wins++; 
+    state.totalSignals++; 
+    state.currentLevel = 0; 
 } else { 
     state.currentLevel++; 
-    state.lossStreak++;
 
     if(state.currentLevel >= FUND_LEVELS.length - 1){
 
-    // 🧠 Record Ladder Crash Pattern
-    if(state.activePrediction && state.activePrediction.pattern){
+        state.totalSignals++;
+        state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
+        state.recoveryMode = true;
+        state.wasOverheated = true;
+        state.cooldownCycles = 0;
 
-        const p = state.activePrediction.pattern;
-
-        if(state.patternStats[p]){
-            state.patternStats[p].ladderFails++;
-        }
-    }
-
-    state.totalSignals++;
-    state.currentLevel = Math.floor(FUND_LEVELS.length / 2);
-    state.recoveryMode = true;
-    state.wasOverheated = true;
-    state.cooldownCycles = 0;
-
-    await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
+        await sendTelegram(`🛡️ <b>RECOVERY MODE ACTIVATED</b>
 Post-loss survival engaged.
 Cooling before next entry.`);
-}
+    }
 
 }  // ✅ THIS WAS MISSING
                     
@@ -628,27 +447,7 @@ Cooling before next entry.`);
                     resMsg += `🏆 <b>𝐖𝐢𝐧 𝐑𝐚𝐭𝐞 :</b> ${currentAccuracy}%\n`;
                     resMsg += divider(); 
                     
-                    await sendTelegram(resMsg);
-
-// 🧠 Pattern Intelligence Check
-const killer = detectKillerPattern();
-
-if(killer && state.lastKiller !== killer){
-
-    state.lastKiller = killer;
-    saveState();
-
-    await sendTelegram(
-`🧠 <b>PATTERN ANALYSIS</b>
-
-⚠️ Weak Pattern Detected
-
-${killer}
-
-Winrate below system average.
-Consider disabling this pattern.`
-);
-} 
+                    await sendTelegram(resMsg); 
                 } 
                 state.activePrediction = null; saveState(); 
             } 
@@ -807,14 +606,7 @@ let betAmount = FUND_LEVELS[state.currentLevel];
 msg += `📊 <b>𝐂𝐨𝐧𝐟𝐢𝐝𝐞𝐧𝐜𝐞 :</b> ${signal.confidence}%`; 
                     msg += divider();
                     await sendTelegram(msg); 
-                    state.activePrediction = {
-    period: targetIssue,
-    pred: signal.action,
-    pattern: signal.reason,
-    type: "SIZE",
-    conf: 100,
-    timestamp: Date.now()
-}; 
+                    state.activePrediction = { period: targetIssue, pred: signal.action, type: "SIZE", conf: 100, timestamp: Date.now() }; 
                     saveState(); 
                 } 
             } 
@@ -830,44 +622,5 @@ saveState();
     } 
 } 
 
-// ==========================
-// 🧠 TELEGRAM COMMAND HANDLER
-// ==========================
-async function checkCommands(){
-
-    try{
-
-        const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${lastUpdateId+1}`);
-        const data = await res.json();
-
-        if(!data.result) return;
-
-        for(const update of data.result){
-
-            lastUpdateId = update.update_id;
-
-            if(!update.message) continue;
-
-            const chat_id = update.message.chat.id;
-            const text = update.message.text;
-
-            if(text === "/stats"){
-    await sendStats(chat_id);
-}
-
-if(text === "/health"){
-    await sendHealth(chat_id);
-}
-        }
-
-    }catch(e){}
-}
-
-
-// ==========================================
-// ⚙️ SYSTEM LOOPS
-// ==========================================
-
-setInterval(checkCommands,5000);   // listen for /stats
-setInterval(tick,3000);            // main trading engine
+setInterval(tick, 3000); 
 tick();
